@@ -606,3 +606,7 @@ The P1 endpoints below are intentionally absent from P0 and must not be implemen
 - Duplicate scan endpoints (FR-052), issue map feed (FR-053)
 
 Any client hitting an unregistered P1 path receives the standard `404 NOT_FOUND` envelope. P1 may ship only after Phase 20 sign-off, behind per-feature flags, and never on P0 acceptance paths.
+
+---
+## Phase 20 finalization (DOC-031, 2026-11-06)
+No contract change. 40 P0 endpoints frozen (v1.0). Stub status per endpoint is recorded in docs/TRACEABILITY_AUDIT.md; do not treat frontend-called paths that return 404 (e.g. GET /categories in this tree) as live until their owning phase lands.

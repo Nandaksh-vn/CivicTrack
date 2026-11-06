@@ -270,5 +270,48 @@ backup scripts are `scripts/backup.*` / `scripts/restore.*`.
 
 ## Design documents
 
-The product and architecture documents are kept in `CivicTrack/docs/` in this
+The product and architecture documents are kept in `docs/` in this
 workspace. They remain the source of truth for requirements and later phases.
+
+## Final delivery (Phase 20)
+
+Release: **documentation baseline for `v1.0.0-p0`** — tag withheld until the
+code GATE closes (see `docs/TRACEABILITY_AUDIT.md` §5).
+
+- **Documentation set:** `docs/ARCHITECTURE.md` (v1.0),
+  `docs/DATA_MODEL.md`, `docs/API_CONTRACT.md` (v1.0),
+  `docs/STATE_MACHINE.md`, `docs/ADRs/` (8), `docs/TEST_PLAN.md`,
+  `docs/UAT_REPORT.md`, `docs/SECURITY_REVIEW.md`,
+  `docs/PERFORMANCE_REPORT.md`, `docs/RUNBOOK.md`,
+  `docs/TRACEABILITY_BASELINE.md`, `docs/TRACEABILITY_AUDIT.md`,
+  `docs/DEMO_SCRIPT.md`, `docs/HANDOVER.md`, `docs/TEST_REPORT.md`,
+  `CHANGELOG.md`, `THIRD_PARTY_NOTICES.md`, `LICENSE` (MIT).
+- **Traceability verdict:** all 50 P0 FR IDs are assigned to phases, but
+  only the auth/config subset (FR-001..FR-006, FR-033) is implemented
+  with passing tests today; 30 P0 rows are missing and 12 are partial
+  (stubs / DB-only). See `docs/TRACEABILITY_AUDIT.md` §2 for the
+  per-FR table. P1 (FR-051..FR-057) is optional-gated and not started;
+  P2 (FR-058..FR-064) is explicitly not built (DOC-034).
+- **Test evidence (TEST-058):** backend 125 passed
+  (`pytest tests/`, 58% coverage), frontend 57 passed
+  (`vitest run`), typecheck/lint clean. E2E golden path and frontend
+  coverage (`@vitest/coverage-v8`) are recorded as not-run — see
+  `docs/TEST_REPORT.md`.
+- **Demo:** `cp .env.demo.example .env && docker compose up -d --build
+  && docker compose run --rm seed python -m app.seed` then follow
+  `docs/DEMO_SCRIPT.md` (submit → accept → progress → escalate →
+  superintendent → resolve). Demo users: `admin@demo.local`,
+  `officer.roads@demo.local`, `superintendent@demo.local`,
+  `citizen1@demo.local` — password `Demo@12345`. Overdue candidate:
+  `CT-2026-100009`. The escalation worker is still a Phase 11 stub
+  (`app/worker.py`), so auto-escalation is not yet live.
+- **Handover:** `docs/HANDOVER.md` (acceptance checklist + signature
+  block). Fresh-clone boot and demo rehearsal must be signed by
+  reviewers before `v1.0.0-p0` is tagged.
+
+Test commands:
+
+```bash
+cd backend && python -m pytest tests -q
+cd frontend && npm run test:run && npm run typecheck && npm run lint
+```

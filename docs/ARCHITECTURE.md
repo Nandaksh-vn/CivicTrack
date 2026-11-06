@@ -697,3 +697,7 @@ Phase 21 (P1) is explicitly out of scope for the P0 build. The following P1 feat
 - P2 — FR-058 … FR-064 (outbound channels/outbox, multi-tenancy, working-day calendars, image verification, public portal, native mobile, work-order integration) are explicitly not built and may not appear in P0/P1 acceptance.
 
 No P1 module may be imported by P0 submission, acceptance, escalation or resolution paths. Enforcement: code review, import linting in CI, and the Phase 20 traceability audit.
+
+---
+## Phase 20 finalization (DOC-031, 2026-11-06)
+No contract change. Frozen architecture (v1.0) stands. See docs/DATA_MODEL.md (corrected to 0001 -> 0002, app/seed.py), docs/TRACEABILITY_AUDIT.md (P0 gap list), and docs/API_CONTRACT.md v1.0 footer for the frozen endpoint catalogue. P1 stays gated (Phase 21); P2 not built.
