@@ -20,6 +20,7 @@ from app.models.enums import (
 )
 from app.models.escalation import Escalation
 from app.models.history import ComplaintStatusHistory
+from app.models.image import ComplaintImage
 from app.models.notification import Notification
 from app.models.officer_action import OfficerAction
 from app.models.user import User
@@ -37,6 +38,7 @@ __all__ = [
     "Department",
     "ComplaintCategory",
     "Complaint",
+    "ComplaintImage",
     "AuditLog",
     "OfficerAction",
     "Notification",

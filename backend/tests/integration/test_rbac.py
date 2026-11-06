@@ -313,12 +313,13 @@ def test_concurrent_last_admin_protection(client: TestClient, admin_user: tuple[
     user, token = admin_user
 
     def attempt_deactivate() -> int:
-        res = client.patch(
-            f"/api/v1/admin/users/{user.id}",
-            json={"is_active": False},
-            headers={"Authorization": f"Bearer {token}"},
-        )
-        return res.status_code
+        with TestClient(client.app) as local_client:
+            res = local_client.patch(
+                f"/api/v1/admin/users/{user.id}",
+                json={"is_active": False},
+                headers={"Authorization": f"Bearer {token}"},
+            )
+            return res.status_code
 
     with ThreadPoolExecutor(max_workers=2) as executor:
         f1 = executor.submit(attempt_deactivate)

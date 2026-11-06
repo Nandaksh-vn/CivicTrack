@@ -4,7 +4,8 @@ CivicTrack — Complaints API Router (TRD §8.4, §8.5, §8.6, RBAC-01..05, FR-0
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, File, Form, UploadFile, status
+from fastapi.responses import FileResponse
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
@@ -18,11 +19,12 @@ from app.core.clock import utcnow
 from app.core.errors import Conflict, NotFound
 from app.db.session import get_db
 from app.models.complaint import Complaint
-from app.models.enums import Role, Status
+from app.models.enums import ImageKind, Role, Status
 from app.models.history import ComplaintStatusHistory
 from app.models.notification import Notification
 from app.models.user import User
 from app.schemas.department import DepartmentOut
+from app.schemas.image import ComplaintImageOut
 from app.schemas.superintendent import (
     ComplaintDetailResponse,
     PublicOfficerOut,
@@ -32,6 +34,7 @@ from app.schemas.superintendent import (
     SuperintendentActionResponse,
     TimelineEventOut,
 )
+from app.services.image_service import resolve_image_file_path, store_complaint_image
 from app.services.superintendent_service import (
     get_timeline_events,
     record_superintendent_action,
@@ -304,4 +307,76 @@ def resolve_complaint_endpoint(
         ),
         resolution_note=complaint.resolution_note or data.note,
         notifications_created=["NT-07"],
+    )
+
+
+# ── Images & Evidence (FR-010, FR-023, TRD §10, NFR-013, SEC-09) ─────────────
+
+
+@router.post(
+    "/{complaint_id}/images",
+    status_code=status.HTTP_201_CREATED,
+    response_model=ComplaintImageOut,
+    summary="Upload image evidence for complaint",
+)
+async def upload_complaint_image(
+    complaint_id: int,
+    file: UploadFile = File(...),
+    kind: ImageKind = Form(ImageKind.PROGRESS),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> ComplaintImageOut:
+    """
+    Upload image evidence (FR-010, FR-023, TRD §10).
+    Validates magic bytes, format, dimensions, size <= 5 MiB.
+    """
+    complaint = _get_complaint_or_404(db, complaint_id)
+
+    # Scoped authorization
+    if current_user.role == Role.CITIZEN:
+        ensure_complaint_owner(complaint, current_user)
+    elif current_user.role == Role.DEPARTMENT_OFFICER:
+        ensure_officer_department(complaint, current_user)
+
+    content = await file.read()
+    image = store_complaint_image(
+        db=db,
+        complaint_id=complaint.id,
+        user=current_user,
+        content=content,
+        filename=file.filename or "evidence.jpg",
+        content_type=file.content_type or "image/jpeg",
+        kind=kind,
+    )
+    return ComplaintImageOut.model_validate(image)
+
+
+@router.get(
+    "/{complaint_id}/images/{image_id}/file",
+    summary="Download or stream complaint image file",
+)
+def get_complaint_image_file(
+    complaint_id: int,
+    image_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> FileResponse:
+    """
+    Serve image file under authorization check (TRD §10.3).
+    Ensures path cannot escape upload root.
+    """
+    file_path, image = resolve_image_file_path(
+        db=db,
+        complaint_id=complaint_id,
+        image_id=image_id,
+        user=current_user,
+    )
+    return FileResponse(
+        path=file_path,
+        media_type=image.mime_type,
+        filename=image.original_filename,
+        headers={
+            "Cache-Control": "private, max-age=300",
+            "Content-Disposition": f'inline; filename="{image.original_filename}"',
+        },
     )
