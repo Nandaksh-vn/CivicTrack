@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import logging
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session, joinedload
 
 from app.core.errors import Conflict, NotFound, UnprocessableEntity
@@ -170,6 +170,36 @@ def update_user_admin(
             )
     else:
         new_dept_id = None
+
+    protected = is_currently_active_admin and (will_demote or will_deactivate)
+
+    if protected:
+        other_admins = (
+            select(func.count(User.id))
+            .where(
+                User.role == Role.PLATFORM_ADMIN,
+                User.is_active.is_(True),
+                User.id != user_id,
+            )
+            .scalar_subquery()
+        )
+        result = db.execute(
+            update(User)
+            .where(
+                User.id == user_id,
+                User.role == Role.PLATFORM_ADMIN,
+                User.is_active.is_(True),
+                other_admins >= 1,
+            )
+            .values(role=new_role, is_active=new_active, department_id=new_dept_id)
+            .execution_options(synchronize_session=False)
+        )
+        if result.rowcount == 0:
+            raise Conflict(
+                message="Cannot deactivate or demote the last active Platform Administrator.",
+                error_code="LAST_ADMIN_PROTECTED",
+            )
+        db.expire(user)
 
     action = "ROLE_CHANGED" if new_role != user.role else "USER_UPDATED"
 
