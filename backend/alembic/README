@@ -1,0 +1,11 @@
+# Alembic migrations
+
+Run `alembic upgrade head` from `backend/` (or let the API container run it on
+startup). Revision files are generated with:
+
+```bash
+alembic revision --autogenerate -m "describe change"
+```
+
+Phase 4 adds the initial schema revision. Keep migrations additive and
+reversible; never edit a migration that has already been applied.
