@@ -80,7 +80,7 @@ Overall Progress = Total Completed Tasks / Total Tasks × 100
 |---|---|---:|---:|---:|---|
 | 1 | Requirements Validation & Scope Baseline | 11 | 11 | 100.0% | Completed |
 | 2 | Architecture & Technical Design Baseline | 12 | 12 | 100.0% | Completed |
-| 3 | Repository, Tooling & Local Environment | 20 | 0 | 0.0% | Not Started |
+| 3 | Repository, Tooling & Local Environment | 20 | 20 | 100.0% | Completed |
 | 4 | Database Schema & Migrations | 20 | 0 | 0.0% | Not Started |
 | 5 | Backend Foundation & Cross-Cutting Core | 15 | 0 | 0.0% | Not Started |
 | 6 | Authentication, Sessions & RBAC | 17 | 17 | 100.0% | Completed |
@@ -99,10 +99,10 @@ Overall Progress = Total Completed Tasks / Total Tasks × 100
 | 19 | Deployment, Operations & Demo Readiness | 12 | 0 | 0.0% | Not Started |
 | 20 | Documentation, Traceability Audit & Final Delivery | 12 | 0 | 0.0% | Not Started |
 | 21 | Optional P1 Enhancements (Gated) | 19 | 0 | 0.0% | Not Started |
-| **TOTAL** | **All phases** | **297** | **91** | **30.6%** | **In Progress** |
+| **TOTAL** | **All phases** | **297** | **111** | **37.4%** | **In Progress** |
 
-**Current Development Phase:** Phase 3 — Repository, Tooling & Local Environment  
-**Overall Progress:** 30.6% (91 of 297 tasks)  
+**Current Development Phase:** Phase 4 — Database Schema & Migrations  
+**Overall Progress:** 37.4% (111 of 297 tasks)  
 **Last completed task:** TEST-035 — Form validation tests mirroring server constraints and 422 field mapping.  
 **Blocked tasks:** None
 
@@ -196,42 +196,52 @@ When asked to develop any part of the project:
 
 ### Database Tasks
 
-- [ ] DB-001 — Define the MySQL 8.4 service in Compose with `utf8mb4_0900_ai_ci`, `--default-time-zone=+00:00`, and InnoDB defaults.
-- [ ] DB-002 — Configure the database volume `civictrack_db`, port mapping, and `mysqladmin ping` healthcheck.
-- [ ] DB-003 — Verify the database starts healthy and accepts connections with the configured user/password.
+- [x] DB-001 — Define the MySQL 8.4 service in Compose with `utf8mb4_0900_ai_ci`, `--default-time-zone=+00:00`, and InnoDB defaults.
+- [x] DB-002 — Configure the database volume `civictrack_db`, port mapping, and `mysqladmin ping` healthcheck.
+- [x] DB-003 — Verify the database starts healthy and accepts connections with the configured user/password.
 
 ### Backend Tasks
 
-- [ ] BE-001 — Initialize git and add `.gitignore` for `.env`, uploads, `node_modules`, `__pycache__`, dist, and coverage.
-- [ ] BE-002 — Scaffold the FastAPI backend on Python 3.12 with the package structure from PHASES §3.5.
-- [ ] BE-003 — Pin backend dependencies: FastAPI, SQLAlchemy 2, Pydantic v2, Alembic, PyMySQL, PyJWT, bcrypt, APScheduler, ruff, pytest, httpx.
-- [ ] BE-004 — Create `app/` folders: `models/`, `schemas/`, `api/`, `services/`, `core/`, `workers/`, `utils/`.
-- [ ] BE-005 — Implement settings loading and startup validation for required secrets and safe defaults.
-- [ ] BE-006 — Add `/health` liveness returning HTTP 200 from the skeleton app.
+- [x] BE-001 — Initialize git and add `.gitignore` for `.env`, uploads, `node_modules`, `__pycache__`, dist, and coverage.
+- [x] BE-002 — Scaffold the FastAPI backend on Python 3.12 with the package structure from PHASES §3.5.
+- [x] BE-003 — Pin backend dependencies: FastAPI, SQLAlchemy 2, Pydantic v2, Alembic, PyMySQL, PyJWT, bcrypt, APScheduler, ruff, pytest, httpx.
+- [x] BE-004 — Create `app/` folders: `models/`, `schemas/`, `api/`, `services/`, `core/`, `workers/`, `utils/`.
+- [x] BE-005 — Implement settings loading and startup validation for required secrets and safe defaults.
+- [x] BE-006 — Add `/health` liveness returning HTTP 200 from the skeleton app.
 
 ### Frontend Tasks
 
-- [ ] FE-001 — Scaffold Vite + React 18.3 + TypeScript with `strict: true` and path aliases.
-- [ ] FE-002 — Configure Tailwind CSS 3.4 and design tokens for color, spacing, and typography.
-- [ ] FE-003 — Initialize shadcn/ui (Radix primitives) and create the `src/` folder structure (`api`, `components`, `features`, `hooks`, `lib`, `pages`, `router`).
-- [ ] FE-004 — Install core frontend dependencies: React Router 6, TanStack Query 5, react-hook-form, Zod, Vitest, Testing Library, Playwright.
+- [x] FE-001 — Scaffold Vite + React 18.3 + TypeScript with `strict: true` and path aliases.
+- [x] FE-002 — Configure Tailwind CSS 3.4 and design tokens for color, spacing, and typography.
+- [x] FE-003 — Initialize shadcn/ui (Radix primitives) and create the `src/` folder structure (`api`, `components`, `features`, `hooks`, `lib`, `pages`, `router`).
+- [x] FE-004 — Install core frontend dependencies: React Router 6, TanStack Query 5, react-hook-form, Zod, Vitest, Testing Library, Playwright.
 
 ### Integration Tasks
 
-- [ ] INT-001 — Define Compose services `api`, `worker`, and `web` with shared uploads volume and correct `depends_on`/health conditions.
-- [ ] INT-002 — Create `.env.example` with every TRD §19 variable and safe non-secret examples.
-- [ ] INT-003 — Add Makefile/npm scripts for `dev`, `test`, `lint`, `typecheck`, `migrate`, `seed`, `compose-up`, `compose-down`.
-- [ ] INT-004 — Configure the frontend dev proxy or `VITE_API_BASE_URL=/api/v1` for local integration.
+- [x] INT-001 — Define Compose services `api`, `worker`, and `web` with shared uploads volume and correct `depends_on`/health conditions.
+- [x] INT-002 — Create `.env.example` with every TRD §19 variable and safe non-secret examples.
+- [x] INT-003 — Add Makefile/npm scripts for `dev`, `test`, `lint`, `typecheck`, `migrate`, `seed`, `compose-up`, `compose-down`.
+- [x] INT-004 — Configure the frontend dev proxy or `VITE_API_BASE_URL=/api/v1` for local integration.
 
 ### Deployment & Operations Tasks
 
-- [ ] DEP-001 — Create the CI workflow: install → lint → typecheck → unit tests → production build.
-- [ ] DEP-002 — Add pre-commit hooks for formatting and secret scanning.
-- [ ] DEP-003 — Document the clean-clone quickstart in `README.md` and verify the commands.
+- [x] DEP-001 — Create the CI workflow: install → lint → typecheck → unit tests → production build.
+- [x] DEP-002 — Add pre-commit hooks for formatting and secret scanning.
+- [x] DEP-003 — Document the clean-clone quickstart in `README.md` and verify the commands.
 
-**Phase Notes:** —  
-**Phase Status:** Not Started  
-**Phase Completion:** 0.0% (0/20 tasks)
+**Phase Notes:** Monorepo and toolchain verified end-to-end. Docker stack healthy: MySQL 8.4
+  (utf8mb4_0900_ai_ci, UTC, io ping health via `mysqladmin ping`), `uploads` and `civictrack_db`
+  volumes, api/worker/web compose services with correct depends_on/health gates, migrate one-shot
+  job, idempotent seed profile. `.env.example` covers the TRD A19 contract and stays
+  git-ignored; Makefile provides dev/test/lint/typecheck/migrate/seed/compose targets; pre-commit
+  wired (ruff, prettier, gitleaks); CI workflow runs backend (pip install, ruff check + format,
+  mypy, pytest), frontend (lint, tsc, vitest, build) and compose config validation. Backend:
+  pinned deps, `app/` layers present, ruff + mypy clean, 118 pytest green. Frontend: Vite 5 +
+  React 18.3 + strict TS + Tailwind 3.4 + RN path aliases, all deps installed; `vite build` OK.
+  Example env wiring: `VITE_API_BASE_URL=/api/v1` and vite dev proxy both route to the API;
+  `/health`, `/health/ready`, `/` all return HTTP 200 on the running stack.  
+**Phase Status:** Completed  
+**Phase Completion:** 100.0% (20/20 tasks)
 
 ---
 
@@ -994,6 +1004,7 @@ At the end of every work session, append a row:
 | 2026-11-06 | Phase 1 | DOC-011 | DOC-012 | `validate_baseline.py` → OVERALL: PASS (215/215 SRS IDs, 44/44 stories, 0 missing, 0 duplicates) | Phase 1 complete; baseline published at `docs/TRACEABILITY_BASELINE.md`; tracker relocated to project root. |
 | 2026-11-06 | Phase 14 | TEST-032 | Phase 2 (next open phase) | Frontend: `tsc --noEmit` clean, `eslint --max-warnings=0` clean, `vitest run` 57/57, `vite build` OK, axe audit zero violations, component tests cover guards + primitives. | Phase 14 completed: full route tree + role guards, sessionStorage auth with /auth/me bootstrap, normalized API client, shared QueryClient, role-aware shell, UI kit (DataTable/Pagination/StatusBadge/Empty/Error/Skeleton/Confirm/Toast/FormField), tokens with 4.5:1 contrast, 360px-safe layout, zero-violation axe. Collision with parallel scaffold was resolved by rebuilding the affected wired pages against this branch's backend. |
 | 2026-11-06 | Phase 2 | DOC-023 | Phase 3 (next open phase) | `validate_phase2.py` PASS: 8/8 ADRs, 40/40 P0 endpoints, 50/50 FR rows, 16/16 AC rows, 11 transitions, zero blockers, P1-not-built PASS. | Phase 2 completed: ARCHITECTURE.md, API_CONTRACT.md, STATE_MACHINE.md, ADRs 001–008 published. Source was recovered from the pre-reset object store and brought onto this branch; P1-not-built sections and the /admin/users role-home alignment were added to reconcile the frozen contract with the live SPA. Next: Phase 3 repo/tooling (mostly present) or Phase 4 database migrations (workstream active). |
+| 2026-11-06 | Phase 3 | DEP-003 | Phase 4 (next open phase) | Stack healthy: db/api/worker/web up on 3307/8000/8080, `/health` `/health/ready` `/` 200; backend ruff + mypy clean, 118 pytest pass; CI workflow validated (lint→typecheck→tests→build + compose config). | Phase 3 completed: compose stack (MySQL 8.4 utf8mb4/UTC, migrate/seed one-shots, uploads volume), .env.example contract, Makefile targets, pre-commit (ruff/prettier/gitleaks), frontend Vite+RN+strict TS baseline, API health endpoints verified live. |
 
 **Resume procedure:** read the Progress Dashboard → read the current phase section → read the next unchecked task → read the matching phase in `docs/PHASES.md` → continue.
 
@@ -1014,7 +1025,7 @@ The tracker itself is valid only when all are true:
 - [x] Task counts in each phase footer match the actual checkbox count.
 - [x] Overall total in the dashboard matches the sum of phase totals.
 
-**Tracker validation status:** Passed — 21 phases, 297 unique tasks, 91 completed.
+**Tracker validation status:** Passed — 21 phases, 297 unique tasks, 111 completed.
 
 ---
 
