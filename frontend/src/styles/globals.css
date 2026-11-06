@@ -8,19 +8,25 @@
     --foreground: 240 10% 4%;
     --card: 0 0% 100%;
     --card-foreground: 240 10% 4%;
-    --primary: 233 78% 62%;
+    --primary: 231 72% 48%;
     --primary-foreground: 0 0% 100%;
     --secondary: 240 5% 96%;
     --secondary-foreground: 240 6% 10%;
     --muted: 240 5% 96%;
-    --muted-foreground: 240 4% 46%;
+    --muted-foreground: 240 4% 40%;
     --accent: 240 5% 96%;
     --accent-foreground: 240 6% 10%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 156 72% 38%;
+    --success-foreground: 0 0% 100%;
+    --warning: 37 95% 40%;
+    --warning-foreground: 0 0% 100%;
+    --info: 201 96% 36%;
+    --info-foreground: 0 0% 100%;
     --border: 240 6% 90%;
     --input: 240 6% 90%;
-    --ring: 233 78% 62%;
+    --ring: 231 72% 48%;
     --radius: 0.75rem;
   }
 
@@ -29,19 +35,25 @@
     --foreground: 0 0% 96%;
     --card: 240 8% 9%;
     --card-foreground: 0 0% 96%;
-    --primary: 233 78% 68%;
-    --primary-foreground: 240 10% 6%;
+    --primary: 233 78% 70%;
+    --primary-foreground: 240 10% 8%;
     --secondary: 240 5% 15%;
     --secondary-foreground: 0 0% 96%;
     --muted: 240 5% 15%;
-    --muted-foreground: 240 5% 64%;
+    --muted-foreground: 240 5% 68%;
     --accent: 240 5% 15%;
     --accent-foreground: 0 0% 96%;
-    --destructive: 0 62% 45%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 72% 60%;
+    --destructive-foreground: 240 10% 8%;
+    --success: 156 64% 52%;
+    --success-foreground: 240 10% 8%;
+    --warning: 38 95% 58%;
+    --warning-foreground: 240 10% 8%;
+    --info: 201 90% 60%;
+    --info-foreground: 240 10% 8%;
     --border: 240 5% 18%;
     --input: 240 5% 18%;
-    --ring: 233 78% 68%;
+    --ring: 233 78% 70%;
   }
 
   * {
@@ -50,5 +62,10 @@
 
   body {
     @apply bg-background text-foreground antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
   }
 }
