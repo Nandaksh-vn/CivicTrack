@@ -57,7 +57,10 @@ def process_escalations(
             continue
 
         prev_status = complaint.status
-        overdue_secs = max(0, int((now - complaint.resolution_due_at).total_seconds()))
+        due_at = complaint.resolution_due_at
+        if due_at is None:
+            continue
+        overdue_secs = max(0, int((now - due_at).total_seconds()))
 
         try:
             # 1. Update complaint status

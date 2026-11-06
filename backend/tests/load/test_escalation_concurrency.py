@@ -6,9 +6,6 @@ from __future__ import annotations
 
 from datetime import timedelta
 
-from sqlalchemy import func, select
-from sqlalchemy.orm import Session
-
 from app.core.clock import utcnow
 from app.models.category import ComplaintCategory
 from app.models.complaint import Complaint
@@ -18,6 +15,8 @@ from app.models.escalation import Escalation
 from app.models.history import ComplaintStatusHistory
 from app.models.user import User
 from app.services.escalation_service import process_escalations
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session
 
 
 def test_escalation_repeated_20_times_is_strictly_idempotent(
@@ -120,10 +119,7 @@ def test_escalation_parallel_run_idempotency(
     assert res3 == 0
 
     total_esc = (
-        db.scalar(
-            select(func.count(Escalation.id)).where(Escalation.complaint_id == comp.id)
-        )
-        or 0
+        db.scalar(select(func.count(Escalation.id)).where(Escalation.complaint_id == comp.id)) or 0
     )
     assert total_esc == 1
 

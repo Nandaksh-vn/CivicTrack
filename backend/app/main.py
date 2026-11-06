@@ -16,7 +16,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
 
-from app.api.v1 import admin, auth, complaints, department, superintendent
+from app.api.v1 import admin, auth, complaints, department, internal, superintendent
 from app.core.config import settings
 from app.core.errors import AppError
 from app.core.logging import configure_logging
@@ -103,11 +103,15 @@ def create_app() -> FastAPI:
         )
 
     @application.get("/health", tags=["Health"])
+    @application.get("/health/live", tags=["Health"])
+    @application.get("/api/v1/health", tags=["Health"])
+    @application.get("/api/v1/health/live", tags=["Health"])
     async def health() -> dict[str, str]:
         """Liveness probe: the process can serve requests."""
         return {"status": "ok", "version": "1.0.0"}
 
     @application.get("/health/ready", tags=["Health"])
+    @application.get("/api/v1/health/ready", tags=["Health"])
     async def readiness() -> JSONResponse:
         """Readiness probe: the API can reach the database."""
         try:
@@ -128,6 +132,7 @@ def create_app() -> FastAPI:
     application.include_router(complaints.router, prefix="/api/v1/complaints")
     application.include_router(department.router, prefix="/api/v1/department")
     application.include_router(superintendent.router, prefix="/api/v1/superintendent")
+    application.include_router(internal.router, prefix="/api/v1/internal")
 
     # Mount with root prefixes for compatibility
     application.include_router(auth.router, prefix="/auth")

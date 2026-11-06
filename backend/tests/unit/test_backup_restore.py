@@ -23,7 +23,7 @@ def test_backup_and_restore_roundtrip(tmp_path: Path):
 
     # Create dummy uploaded files
     sample_file = uploads_dir / "test_photo.jpg"
-    sample_file.write_bytes(b"\xFF\xD8\xFF\xE0" + b"A" * 1024)
+    sample_file.write_bytes(b"\xff\xd8\xff\xe0" + b"A" * 1024)
 
     # Execute backup
     archive = create_backup(
@@ -44,4 +44,3 @@ def test_backup_and_restore_roundtrip(tmp_path: Path):
     assert success is True
     assert (restore_target / "test_photo.jpg").exists()
     assert (restore_target / "test_photo.jpg").read_bytes() == sample_file.read_bytes()
-

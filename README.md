@@ -113,7 +113,7 @@ docker compose exec api python -m app.seed
 
 CivicTrack maintains comprehensive automated test coverage across unit, integration, RBAC matrix, IDOR security, load benchmarks, and frontend accessibility.
 
-### Running Backend Tests (80 / 80 Passing):
+### Running Backend Tests (83 / 83 Passing):
 ```bash
 cd backend
 pytest tests -v

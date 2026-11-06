@@ -78,7 +78,7 @@ def get_current_user(
     return user
 
 
-def require_roles(*allowed_roles: Role) -> Callable[[User, Request, Session], User]:
+def require_roles(*allowed_roles: Role) -> Callable[[Request, User, Session], User]:
     """
     Dependency factory that checks whether current_user has one of the allowed roles (RBAC-01).
     Logs an audit entry upon denial (RBAC-08) and raises HTTP 403 Forbidden.

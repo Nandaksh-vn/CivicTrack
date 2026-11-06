@@ -12,7 +12,7 @@
 - [x] **Zero Code TODOs:** All P0 code paths implemented without placeholder stubs.
 - [x] **Secrets Hygiene:** No credentials or JWT secrets committed to version control.
 - [x] **Database Schema:** 11 core tables created, constrained, indexed, and migration-tested.
-- [x] **Backend Test Suite:** 80 / 80 tests passing (unit, integration, RBAC, load, security, capacity, seed, backup).
+- [x] **Backend Test Suite:** 83 / 83 tests passing (unit, integration, RBAC, load, security, capacity, seed, backup, internal escalation).
 - [x] **Frontend Test Suite:** 6 / 6 tests passing (routing, navigation, WCAG accessibility, landmarks).
 - [x] **Security Hardening:** 12-case RBAC matrix, IDOR resistance, upload magic-bytes, and PII log redaction verified.
 - [x] **Performance Benchmarks:** p95 list latency < 1.0s, detail latency < 2.0s under load.

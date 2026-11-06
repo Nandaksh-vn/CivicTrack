@@ -9,8 +9,10 @@ from __future__ import annotations
 import logging
 from datetime import timedelta
 from decimal import Decimal
+from typing import Any
 
 from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 from app.core.clock import utcnow
 from app.core.logging import configure_logging
@@ -30,7 +32,12 @@ configure_logging()
 logger = logging.getLogger(__name__)
 
 
-def seed_database(session: SessionLocal | None = None) -> None:
+def _user_id(value: Any) -> int | None:
+    """Return the id of an optional ORM user value."""
+    return value.id if value is not None else None
+
+
+def seed_database(session: Session | None = None) -> None:
     db = session or SessionLocal()
     should_close = session is None
     try:
@@ -40,15 +47,33 @@ def seed_database(session: SessionLocal | None = None) -> None:
         # -------------------------------------------------------------
         # 1. Departments (Idempotent)
         # -------------------------------------------------------------
-        departments_data = [
-            {"name": "Water Supply & Sewage", "code": "WTR", "description": "Municipal water distribution and sewerage"},
-            {"name": "Roads & Transport", "code": "RDS", "description": "Road maintenance, traffic signals, and pathways"},
-            {"name": "Electricity & Lighting", "code": "ELE", "description": "Street lighting and public electrical utilities"},
-            {"name": "Waste Management & Sanitation", "code": "SAN", "description": "Solid waste collection and urban sanitation"},
+        departments_data: list[dict[str, Any]] = [
+            {
+                "name": "Water Supply & Sewage",
+                "code": "WTR",
+                "description": "Municipal water distribution and sewerage",
+            },
+            {
+                "name": "Roads & Transport",
+                "code": "RDS",
+                "description": "Road maintenance, traffic signals, and pathways",
+            },
+            {
+                "name": "Electricity & Lighting",
+                "code": "ELE",
+                "description": "Street lighting and public electrical utilities",
+            },
+            {
+                "name": "Waste Management & Sanitation",
+                "code": "SAN",
+                "description": "Solid waste collection and urban sanitation",
+            },
         ]
         dept_map: dict[str, Department] = {}
         for d_info in departments_data:
-            dept = db.execute(select(Department).where(Department.code == d_info["code"])).scalar_one_or_none()
+            dept = db.execute(
+                select(Department).where(Department.code == d_info["code"])
+            ).scalar_one_or_none()
             if not dept:
                 dept = Department(
                     name=d_info["name"],
@@ -66,15 +91,37 @@ def seed_database(session: SessionLocal | None = None) -> None:
         # -------------------------------------------------------------
         # 2. Categories (Idempotent)
         # -------------------------------------------------------------
-        categories_data = [
-            {"name": "Pipe Burst / Water Leakage", "code": "WTR_BURST", "dept": "WTR", "priority": Priority.HIGH},
-            {"name": "Pothole / Road Damage", "code": "RDS_POTHOLE", "dept": "RDS", "priority": Priority.MEDIUM},
-            {"name": "Streetlight Outage", "code": "ELE_LIGHT", "dept": "ELE", "priority": Priority.LOW},
-            {"name": "Garbage Dump Overflow", "code": "SAN_GARBAGE", "dept": "SAN", "priority": Priority.MEDIUM},
+        categories_data: list[dict[str, Any]] = [
+            {
+                "name": "Pipe Burst / Water Leakage",
+                "code": "WTR_BURST",
+                "dept": "WTR",
+                "priority": Priority.HIGH,
+            },
+            {
+                "name": "Pothole / Road Damage",
+                "code": "RDS_POTHOLE",
+                "dept": "RDS",
+                "priority": Priority.MEDIUM,
+            },
+            {
+                "name": "Streetlight Outage",
+                "code": "ELE_LIGHT",
+                "dept": "ELE",
+                "priority": Priority.LOW,
+            },
+            {
+                "name": "Garbage Dump Overflow",
+                "code": "SAN_GARBAGE",
+                "dept": "SAN",
+                "priority": Priority.MEDIUM,
+            },
         ]
         cat_map: dict[str, ComplaintCategory] = {}
         for c_info in categories_data:
-            cat = db.execute(select(ComplaintCategory).where(ComplaintCategory.code == c_info["code"])).scalar_one_or_none()
+            cat = db.execute(
+                select(ComplaintCategory).where(ComplaintCategory.code == c_info["code"])
+            ).scalar_one_or_none()
             if not cat:
                 cat = ComplaintCategory(
                     name=c_info["name"],
@@ -93,7 +140,7 @@ def seed_database(session: SessionLocal | None = None) -> None:
         # -------------------------------------------------------------
         # 3. Users (Idempotent)
         # -------------------------------------------------------------
-        users_data = [
+        users_data: list[dict[str, Any]] = [
             {
                 "email": "admin@civictrack.local",
                 "full_name": "Platform Administrator",
@@ -139,7 +186,9 @@ def seed_database(session: SessionLocal | None = None) -> None:
         ]
         user_map: dict[str, User] = {}
         for u_info in users_data:
-            user = db.execute(select(User).where(User.email == u_info["email"])).scalar_one_or_none()
+            user = db.execute(
+                select(User).where(User.email == u_info["email"])
+            ).scalar_one_or_none()
             if not user:
                 user = User(
                     email=u_info["email"],
@@ -168,7 +217,7 @@ def seed_database(session: SessionLocal | None = None) -> None:
         # Default SLA window: 7 days (604,800 seconds)
         sla_seconds = 7 * 24 * 3600
 
-        complaints_data = [
+        complaints_data: list[dict[str, Any]] = [
             # 1. SUBMITTED
             {
                 "number": "CT-DEMO-001",
@@ -276,7 +325,9 @@ def seed_database(session: SessionLocal | None = None) -> None:
         ]
 
         for cmp_data in complaints_data:
-            existing = db.execute(select(Complaint).where(Complaint.complaint_number == cmp_data["number"])).scalar_one_or_none()
+            existing = db.execute(
+                select(Complaint).where(Complaint.complaint_number == cmp_data["number"])
+            ).scalar_one_or_none()
             if existing:
                 continue
 
@@ -298,15 +349,15 @@ def seed_database(session: SessionLocal | None = None) -> None:
                 priority=cmp_data["priority"],
                 submitted_at=sub_at,
                 accepted_at=accepted_at,
-                accepted_by_user_id=cmp_data.get("accepted_by").id if cmp_data.get("accepted_by") else None,
+                accepted_by_user_id=_user_id(cmp_data.get("accepted_by")),
                 sla_seconds=sla_seconds if accepted_at else None,
                 resolution_due_at=due_at,
                 escalated_at=cmp_data.get("escalated_time"),
                 resolved_at=cmp_data.get("resolved_time"),
-                resolved_by_user_id=cmp_data.get("resolved_by").id if cmp_data.get("resolved_by") else None,
+                resolved_by_user_id=_user_id(cmp_data.get("resolved_by")),
                 resolution_note=cmp_data.get("res_note"),
                 rejected_at=cmp_data.get("rejected_time"),
-                rejected_by_user_id=cmp_data.get("rejected_by").id if cmp_data.get("rejected_by") else None,
+                rejected_by_user_id=_user_id(cmp_data.get("rejected_by")),
                 rejection_reason=cmp_data.get("rej_reason"),
                 created_at=sub_at,
                 updated_at=now,
@@ -332,7 +383,7 @@ def seed_database(session: SessionLocal | None = None) -> None:
                     complaint_id=c.id,
                     from_status=Status.SUBMITTED,
                     to_status=Status.IN_PROGRESS,
-                    actor_user_id=cmp_data.get("accepted_by").id if cmp_data.get("accepted_by") else None,
+                    actor_user_id=_user_id(cmp_data.get("accepted_by")),
                     actor_role=Role.DEPARTMENT_OFFICER.value,
                     note="Complaint accepted for investigation",
                     created_at=accepted_at,
@@ -384,7 +435,7 @@ def seed_database(session: SessionLocal | None = None) -> None:
                     complaint_id=c.id,
                     from_status=Status.IN_PROGRESS,
                     to_status=Status.RESOLVED,
-                    actor_user_id=cmp_data.get("resolved_by").id if cmp_data.get("resolved_by") else None,
+                    actor_user_id=_user_id(cmp_data.get("resolved_by")),
                     actor_role=Role.SUPERINTENDENT_OFFICER.value,
                     note=cmp_data.get("res_note"),
                     created_at=res_time,
@@ -398,7 +449,7 @@ def seed_database(session: SessionLocal | None = None) -> None:
                     complaint_id=c.id,
                     from_status=Status.SUBMITTED,
                     to_status=Status.REJECTED,
-                    actor_user_id=cmp_data.get("rejected_by").id if cmp_data.get("rejected_by") else None,
+                    actor_user_id=_user_id(cmp_data.get("rejected_by")),
                     actor_role=Role.DEPARTMENT_OFFICER.value,
                     note=cmp_data.get("rej_reason"),
                     created_at=rej_time,
@@ -416,7 +467,11 @@ def seed_database(session: SessionLocal | None = None) -> None:
                 created_at=sub_at,
             )
             db.add(notif)
-            logger.info("event=seed_complaint_created number=%s status=%s", c.complaint_number, c.status.value)
+            logger.info(
+                "event=seed_complaint_created number=%s status=%s",
+                c.complaint_number,
+                c.status.value,
+            )
 
         db.commit()
         logger.info("event=seed_completed status=success")

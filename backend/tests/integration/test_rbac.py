@@ -7,6 +7,7 @@ from __future__ import annotations
 from app.models.audit import AuditLog
 from app.models.complaint import Complaint
 from app.models.department import Department
+from app.models.enums import Role
 from app.models.user import User
 from fastapi.testclient import TestClient
 from sqlalchemy import select
@@ -306,25 +307,79 @@ def test_last_admin_protection(client: TestClient, admin_user: tuple[User, str])
     assert res_deact_ok.json()["is_active"] is False
 
 
-def test_concurrent_last_admin_protection(client: TestClient, admin_user: tuple[User, str]) -> None:
-    """TEST-004: Concurrency test proving concurrent requests cannot deactivate the last active admin."""
+def test_concurrent_last_admin_protection(tmp_path) -> None:
+    """
+    TEST-004: Concurrency test proving concurrent requests cannot deactivate the
+    last active admin.
+
+    Uses a file-backed SQLite database with a fresh session per request so the
+    two concurrent requests do not share a single (non-thread-safe) session.
+    """
     from concurrent.futures import ThreadPoolExecutor
 
-    user, token = admin_user
+    from app.core.security import create_access_token, hash_password
+    from app.db.base import Base
+    from app.db.session import get_db
+    from app.main import app
+    from sqlalchemy import create_engine
+    from sqlalchemy.orm import sessionmaker
 
-    def attempt_deactivate() -> int:
-        with TestClient(client.app) as local_client:
-            res = local_client.patch(
-                f"/api/v1/admin/users/{user.id}",
-                json={"is_active": False},
-                headers={"Authorization": f"Bearer {token}"},
-            )
-            return res.status_code
+    concurrent_engine = create_engine(
+        f"sqlite:///{(tmp_path / 'concurrent.db').as_posix()}",
+        connect_args={"check_same_thread": False},
+    )
+    concurrent_session_factory = sessionmaker(
+        bind=concurrent_engine, autocommit=False, autoflush=False, expire_on_commit=False
+    )
+    Base.metadata.create_all(bind=concurrent_engine)
 
-    with ThreadPoolExecutor(max_workers=2) as executor:
-        f1 = executor.submit(attempt_deactivate)
-        f2 = executor.submit(attempt_deactivate)
-        status_codes = [f1.result(), f2.result()]
+    with concurrent_session_factory() as setup_session:
+        admin = User(
+            full_name="Platform Admin",
+            email="admin@demo.local",
+            password_hash=hash_password("DemoAdmin123"),
+            role=Role.PLATFORM_ADMIN,
+            is_active=True,
+        )
+        setup_session.add(admin)
+        setup_session.commit()
+        setup_session.refresh(admin)
+        admin_id = admin.id
+
+    token, _ = create_access_token(admin_id, Role.PLATFORM_ADMIN.value)
+
+    def override_get_db():
+        request_session = concurrent_session_factory()
+        try:
+            yield request_session
+        finally:
+            request_session.close()
+
+    app.dependency_overrides[get_db] = override_get_db
+    try:
+
+        def attempt_deactivate() -> int:
+            with TestClient(app) as local_client:
+                res = local_client.patch(
+                    f"/api/v1/admin/users/{admin_id}",
+                    json={"is_active": False},
+                    headers={"Authorization": f"Bearer {token}"},
+                )
+                return res.status_code
+
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            f1 = executor.submit(attempt_deactivate)
+            f2 = executor.submit(attempt_deactivate)
+            status_codes = [f1.result(), f2.result()]
+    finally:
+        app.dependency_overrides.clear()
+        concurrent_engine.dispose()
 
     # Since there was only 1 active admin, both requests must be blocked with 409
     assert all(code == 409 for code in status_codes)
+
+    # And the last active admin must still be active
+    with concurrent_session_factory() as verify_session:
+        refreshed = verify_session.get(User, admin_id)
+        assert refreshed is not None
+        assert refreshed.is_active is True

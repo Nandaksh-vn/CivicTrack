@@ -112,9 +112,9 @@ curl -X POST http://localhost:8000/api/v1/internal/escalations/trigger \
 Response:
 ```json
 {
-  "scanned": 6,
+  "evaluated": 6,
   "escalated": 1,
-  "elapsed_ms": 24.5
+  "skipped": 5
 }
 ```
 

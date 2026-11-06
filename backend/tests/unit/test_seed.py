@@ -6,15 +6,13 @@ and that re-running seed is strictly idempotent.
 
 from __future__ import annotations
 
-import pytest
-from sqlalchemy import select
-
 from app.models.category import ComplaintCategory
 from app.models.complaint import Complaint
 from app.models.department import Department
 from app.models.enums import Status
 from app.models.user import User
 from app.seed import seed_database
+from sqlalchemy import select
 
 
 def test_seed_database_execution_and_idempotency(db):

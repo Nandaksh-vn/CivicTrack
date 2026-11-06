@@ -63,5 +63,5 @@ def get_escalation_summary(
     db: Session = Depends(get_db),
 ) -> EscalationQueueSummary:
     """Escalation metrics summary (FR-035)."""
-    _, summary, _ = get_escalation_queue(db=db, page=1, page_size=1)
+    _items, summary, _total = get_escalation_queue(db=db, page=1, page_size=1)
     return EscalationQueueSummary(**summary)

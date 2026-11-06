@@ -188,7 +188,8 @@ List endpoints support `limit` (default: 20, max: 100) and `offset` (default: 0)
 
 ## 7. Internal & Diagnostic (`/internal`, `/health`)
 
-- `POST /api/v1/internal/escalations/trigger`: Token-protected endpoint (`X-Internal-Token`). Scans and escalates all overdue complaints.
+- `POST /api/v1/internal/escalations/run` (alias: `/trigger`): Token-protected endpoint (`X-Internal-Token`). Scans and escalates all overdue complaints and returns `{evaluated, escalated, skipped}`.
+- `GET /api/v1/internal/escalation-status`: Token-protected effective SLA window and last escalation metadata.
 - `GET /api/v1/health`: Liveness probe (HTTP 200).
 - `GET /api/v1/health/live`: Worker & API process liveness.
 - `GET /api/v1/health/ready`: Database connectivity check.

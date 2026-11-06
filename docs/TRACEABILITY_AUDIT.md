@@ -58,7 +58,7 @@
 | **FR-031** | Atomic escalation state transition | `app/services/escalation_service.py` | `test_escalation_concurrency.py` | PASS |
 | **FR-032** | Escalation notification fan-out | `app/services/escalation_service.py` | `test_escalation_concurrency.py` | PASS |
 | **FR-033** | Exactly-once escalation idempotency | `app/services/escalation_service.py` | `test_escalation_concurrency.py` | PASS |
-| **FR-034** | Manual escalation trigger endpoint | `app/api/v1/complaints.py` | `test_config.py`, `RUNBOOK.md` | PASS |
+| **FR-034** | Manual escalation trigger endpoint | `app/api/v1/internal.py` | `test_internal.py`, `RUNBOOK.md` | PASS |
 | **FR-035** | Superintendent escalation queue | `app/api/superintendent.py` | `test_superintendent.py` | PASS |
 | **FR-036** | Overdue duration dynamic sorting | `app/api/superintendent.py` | `test_superintendent.py` | PASS |
 | **FR-037** | Escalated complaint detail projection | `app/api/superintendent.py` | `test_superintendent.py` | PASS |
