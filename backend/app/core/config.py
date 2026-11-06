@@ -6,6 +6,7 @@ canonical; compatibility aliases are accepted for the names used by the Phase 3
 tooling (`APP_ENV`, `JWT_SECRET_KEY`, `ESCALATION_INTERVAL_SECONDS`,
 `INTERNAL_API_TOKEN`).
 """
+
 from __future__ import annotations
 
 import logging
@@ -105,7 +106,9 @@ class Settings(BaseSettings):
     @property
     def demo_mode(self) -> bool:
         """True only when a non-default window is explicitly enabled."""
-        return self.allow_demo_escalation and self.escalation_window_minutes != _PRODUCTION_SLA_MINUTES
+        return (
+            self.allow_demo_escalation and self.escalation_window_minutes != _PRODUCTION_SLA_MINUTES
+        )
 
     @property
     def cors_origin_list(self) -> list[str]:
@@ -113,7 +116,9 @@ class Settings(BaseSettings):
 
     @property
     def allowed_mime_types(self) -> list[str]:
-        return [value.strip() for value in self.upload_allowed_mime_types.split(",") if value.strip()]
+        return [
+            value.strip() for value in self.upload_allowed_mime_types.split(",") if value.strip()
+        ]
 
     @property
     def max_upload_bytes(self) -> int:
@@ -136,7 +141,7 @@ class Settings(BaseSettings):
         return value
 
     @model_validator(mode="after")
-    def _validate_safety(self) -> "Settings":
+    def _validate_safety(self) -> Settings:
         """Apply the demo-window guard and refuse unsafe production startup."""
         if (
             self.escalation_window_minutes != _PRODUCTION_SLA_MINUTES
@@ -152,11 +157,10 @@ class Settings(BaseSettings):
 
         problems: list[str] = []
         if self.is_production:
-            if (
-                self.jwt_secret.startswith("CHANGE_ME")
-                or len(self.jwt_secret) < 32
-            ):
-                problems.append("JWT_SECRET must be a non-placeholder secret of at least 32 characters")
+            if self.jwt_secret.startswith("CHANGE_ME") or len(self.jwt_secret) < 32:
+                problems.append(
+                    "JWT_SECRET must be a non-placeholder secret of at least 32 characters"
+                )
             if (
                 self.internal_trigger_token.startswith("CHANGE_ME")
                 or len(self.internal_trigger_token) < 32

@@ -1,9 +1,7 @@
 """
 CivicTrack - FastAPI application factory.
-
-The Phase 3 skeleton exposes health/readiness probes only. Domain routers are
-added in later phases without changing the application wiring.
 """
+
 from __future__ import annotations
 
 import logging
@@ -12,10 +10,13 @@ from collections.abc import AsyncGenerator, Awaitable, Callable
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, Response
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
 
+from app.api.v1 import admin, auth, complaints, department, superintendent
 from app.core.config import settings
 from app.core.errors import AppError
 from app.core.logging import configure_logging
@@ -78,6 +79,17 @@ def create_app() -> FastAPI:
             },
         )
 
+    @application.exception_handler(RequestValidationError)
+    async def validation_error_handler(_: Request, exc: RequestValidationError) -> JSONResponse:
+        return JSONResponse(
+            status_code=422,
+            content={
+                "error": "VALIDATION_ERROR",
+                "message": "Validation failed.",
+                "details": jsonable_encoder(exc.errors()),
+            },
+        )
+
     @application.exception_handler(Exception)
     async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:
         logger.exception("Unhandled exception on %s %s", request.method, request.url.path)
@@ -108,6 +120,21 @@ def create_app() -> FastAPI:
                 content={"status": "not ready", "db": "unavailable"},
             )
         return JSONResponse(status_code=200, content={"status": "ready", "db": "ok"})
+
+    # ── API Routers ───────────────────────────────────────────────────────────
+    # Mount with /api/v1 prefix (TRD canonical)
+    application.include_router(auth.router, prefix="/api/v1/auth")
+    application.include_router(admin.router, prefix="/api/v1/admin")
+    application.include_router(complaints.router, prefix="/api/v1/complaints")
+    application.include_router(department.router, prefix="/api/v1/department")
+    application.include_router(superintendent.router, prefix="/api/v1/superintendent")
+
+    # Mount with root prefixes for compatibility
+    application.include_router(auth.router, prefix="/auth")
+    application.include_router(admin.router, prefix="/admin")
+    application.include_router(complaints.router, prefix="/complaints")
+    application.include_router(department.router, prefix="/department")
+    application.include_router(superintendent.router, prefix="/superintendent")
 
     return application
 

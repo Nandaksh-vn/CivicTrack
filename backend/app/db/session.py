@@ -1,6 +1,7 @@
 """
 CivicTrack - SQLAlchemy engine and session factory (TRD sections 5.3 and 6.2).
 """
+
 from __future__ import annotations
 
 from collections.abc import Generator

@@ -64,6 +64,9 @@ ignore = [
     "B008",    # FastAPI dependency calls in defaults
     "E501",    # long comments / API descriptions are acceptable
     "S101",    # asserts are allowed in tests (also ignored per-test below)
+    "N818",    # AppError hierarchy uses HTTP error names from TRD §2.6
+    "S105",    # seed password and defaults
+    "S106",    # token_type string literals
 ]
 per-file-ignores = { "tests/**/*.py" = ["ANN", "S"] }
 

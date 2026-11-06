@@ -3,15 +3,15 @@
 The runtime DSN comes from the same ``DATABASE_URL`` setting used by the API and
 worker, so migrations can never drift from the application configuration.
 """
+
 from __future__ import annotations
 
 from logging.config import fileConfig
 
 from alembic import context
-from sqlalchemy import create_engine, pool
-
 from app.core.config import settings
 from app.db.base import Base
+from sqlalchemy import create_engine, pool
 
 config = context.config
 

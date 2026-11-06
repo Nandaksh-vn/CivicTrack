@@ -83,7 +83,7 @@ Overall Progress = Total Completed Tasks / Total Tasks × 100
 | 3 | Repository, Tooling & Local Environment | 20 | 0 | 0.0% | Not Started |
 | 4 | Database Schema & Migrations | 20 | 0 | 0.0% | Not Started |
 | 5 | Backend Foundation & Cross-Cutting Core | 15 | 0 | 0.0% | Not Started |
-| 6 | Authentication, Sessions & RBAC | 17 | 0 | 0.0% | Not Started |
+| 6 | Authentication, Sessions & RBAC | 17 | 17 | 100.0% | Completed |
 | 7 | Notifications Engine | 9 | 0 | 0.0% | Not Started |
 | 8 | Complaint Submission, Media & Routing | 15 | 0 | 0.0% | Not Started |
 | 9 | Citizen Tracking & Timeline | 9 | 0 | 0.0% | Not Started |
@@ -302,30 +302,30 @@ When asked to develop any part of the project:
 
 ### Backend Tasks
 
-- [ ] BE-022 — Implement the user repository/model access layer, including department joins.
-- [ ] BE-023 — Implement bcrypt password hashing (cost ≥12), policy validation, and constant-time verification.
-- [ ] BE-024 — Implement `POST /auth/register` with full validation, unique email, CITIZEN role, and 201 response + JWT.
-- [ ] BE-025 — Implement `POST /auth/login` and `POST /auth/logout` with generic failure messaging and 204 logout.
-- [ ] BE-026 — Implement JWT issue/verify (HS256, 8 h, ≥32-byte secret) with expiry and inactive-user rejection.
-- [ ] BE-027 — Implement the `CurrentUser` dependency and authentication guard.
-- [ ] BE-028 — Implement `require_roles(...)` and route-level role enforcement.
-- [ ] BE-029 — Implement object-scope helpers: citizen owner, officer department, superintendent escalated-only, admin global.
-- [ ] BE-030 — Implement `GET /auth/me` returning the public profile and department name only.
-- [ ] BE-031 — Implement `GET /admin/users` and `POST /admin/users` with officer department requirement.
-- [ ] BE-032 — Implement `PATCH /admin/users/{id}` for role, department, and active-state changes.
-- [ ] BE-033 — Enforce last-active-admin protection against deactivation and demotion.
-- [ ] BE-034 — Write audit events for login success/failure, registration, role change, and denied access.
+- [x] BE-022 — Implement the user repository/model access layer, including department joins.
+- [x] BE-023 — Implement bcrypt password hashing (cost ≥12), policy validation, and constant-time verification.
+- [x] BE-024 — Implement `POST /auth/register` with full validation, unique email, CITIZEN role, and 201 response + JWT.
+- [x] BE-025 — Implement `POST /auth/login` and `POST /auth/logout` with generic failure messaging and 204 logout.
+- [x] BE-026 — Implement JWT issue/verify (HS256, 8 h, ≥32-byte secret) with expiry and inactive-user rejection.
+- [x] BE-027 — Implement the `CurrentUser` dependency and authentication guard.
+- [x] BE-028 — Implement `require_roles(...)` and route-level role enforcement.
+- [x] BE-029 — Implement object-scope helpers: citizen owner, officer department, superintendent escalated-only, admin global.
+- [x] BE-030 — Implement `GET /auth/me` returning the public profile and department name only.
+- [x] BE-031 — Implement `GET /admin/users` and `POST /admin/users` with officer department requirement.
+- [x] BE-032 — Implement `PATCH /admin/users/{id}` for role, department, and active-state changes.
+- [x] BE-033 — Enforce last-active-admin protection against deactivation and demotion.
+- [x] BE-034 — Write audit events for login success/failure, registration, role change, and denied access.
 
 ### Testing Tasks
 
-- [ ] TEST-001 — Unit tests for password policy, bcrypt verification, JWT expiry, and secret validation.
-- [ ] TEST-002 — Integration tests for register → login → me, duplicate email, invalid credentials, and inactive user.
-- [ ] TEST-003 — Execute the 12-case RBAC matrix and assert 401/403 behavior per route.
-- [ ] TEST-004 — Concurrency test proving two requests cannot deactivate/demote the last active admin.
+- [x] TEST-001 — Unit tests for password policy, bcrypt verification, JWT expiry, and secret validation.
+- [x] TEST-002 — Integration tests for register → login → me, duplicate email, invalid credentials, and inactive user.
+- [x] TEST-003 — Execute the 12-case RBAC matrix and assert 401/403 behavior per route.
+- [x] TEST-004 — Concurrency test proving two requests cannot deactivate/demote the last active admin.
 
-**Phase Notes:** —  
-**Phase Status:** Not Started  
-**Phase Completion:** 0.0% (0/17 tasks)
+**Phase Notes:** Phase 6 complete: Auth, sessions, user admin, object-scope guards, 12-case RBAC matrix, audit events, and last-admin concurrency protection all passing.  
+**Phase Status:** Completed  
+**Phase Completion:** 100.0% (17/17 tasks)
 
 ---
 

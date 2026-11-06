@@ -5,6 +5,7 @@ Runs as a separate container and shares the Python package with the API. The
 real escalation service is added in Phase 11; Phase 3 only wires the scheduler
 and validates the worker process stays alive.
 """
+
 from __future__ import annotations
 
 import logging

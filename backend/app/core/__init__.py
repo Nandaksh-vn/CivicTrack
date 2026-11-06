@@ -1,2 +1,1 @@
 """CivicTrack — core package"""
-

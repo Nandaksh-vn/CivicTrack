@@ -3,6 +3,7 @@ CivicTrack — Structured logging configuration (TRD §5.8)
 JSON output to stdout; collected by Docker log driver.
 No PII, tokens, emails, or coordinates in log messages.
 """
+
 from __future__ import annotations
 
 import logging
@@ -26,4 +27,3 @@ def configure_logging() -> None:
     # Suppress noisy third-party loggers
     for noisy in ("uvicorn.access", "sqlalchemy.engine"):
         logging.getLogger(noisy).setLevel(logging.WARNING)
-

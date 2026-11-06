@@ -3,6 +3,7 @@ CivicTrack — Error taxonomy and exception hierarchy (TRD §2.6)
 All service-layer exceptions derive from AppError; routers never raise HTTP
 exceptions directly — they let the central exception handler convert them.
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -67,4 +68,3 @@ class InternalError(AppError):
     status_code = 500
     error_code = "INTERNAL_ERROR"
     message = "An unexpected error occurred."
-

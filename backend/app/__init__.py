@@ -1,2 +1,1 @@
 """CivicTrack — app package"""
-

@@ -4,6 +4,7 @@ Phase 4 replaces this with an idempotent seed of departments, categories, and
 demo users. Keeping the command wired now means `make seed` is a stable entry
 point for developers and CI.
 """
+
 from __future__ import annotations
 
 import logging
