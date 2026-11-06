@@ -71,3 +71,8 @@ frontend/playwright/.cache/
 coverage/
 *.lcov
 
+# ── Deployment backups (Phase 19: never commit dumps/uploads) ───────────────
+backups/
+frontend/*.log
+*.log
+

@@ -84,8 +84,11 @@ migrate:  ## Run alembic upgrade head
 migrate-down:  ## Roll back the last migration
 	cd $(BACKEND) && alembic downgrade -1
 
-seed:  ## Seed demo data (Phase 4 adds the real seed)
+seed:  ## Seed demo data (idempotent; Phase 19 dataset)
 	cd $(BACKEND) && $(PYTHON) -m app.seed
+
+seed-check:  ## Verify the demo dataset incl. the overdue candidate
+	cd $(BACKEND) && $(PYTHON) -m app.seed --check
 
 # -- Docker Compose -----------------------------------------------------------
 compose-up:  ## Build and start all services in the background
@@ -108,6 +111,15 @@ compose-config:  ## Validate the Compose file without starting containers
 
 compose-restart:  ## Restart all services
 	$(COMPOSE) restart
+
+prod-up:  ## Production stack via the prod overlay (needs production .env)
+	$(COMPOSE) -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+
+prod-proxy:  ## Production stack + optional Caddy reverse proxy
+	$(COMPOSE) -f docker-compose.yml -f docker-compose.prod.yml --profile proxy up -d --build
+
+backup:  ## Back up DB + uploads to ./backups
+	./scripts/backup.sh ./backups
 
 # -- Build --------------------------------------------------------------------
 build: build-frontend  ## Build production frontend assets

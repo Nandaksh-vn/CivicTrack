@@ -17,15 +17,23 @@ _connect_args: dict[str, Any] = (
     {"check_same_thread": False} if _is_sqlite else {"connect_timeout": 5, "charset": "utf8mb4"}
 )
 
-engine = create_engine(
-    settings.database_url,
-    pool_size=10,
-    max_overflow=20,
-    pool_recycle=1800,
-    pool_pre_ping=True,
-    connect_args=_connect_args,
-    echo=False,
-)
+if _is_sqlite:
+    # SQLite (tests / local seed smoke) rejects pool tuning args.
+    engine = create_engine(
+        settings.database_url,
+        connect_args=_connect_args,
+        echo=False,
+    )
+else:
+    engine = create_engine(
+        settings.database_url,
+        pool_size=10,
+        max_overflow=20,
+        pool_recycle=1800,
+        pool_pre_ping=True,
+        connect_args=_connect_args,
+        echo=False,
+    )
 
 
 if engine.dialect.name == "mysql":

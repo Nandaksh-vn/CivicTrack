@@ -26,7 +26,7 @@ async function registerCitizen(page: Page, email: string, password = "Password12
   await page.click('button:has-text("Create account")');
 
   // Wait up to 15s for either navigation to complaints/new or an error
-  await page.waitForURL(/\/complaints\/new/, { timeout: 15_000 }).catch(() => {
+  await page.waitForURL(/\/complaints\/new/, { timeout: 15_000 }).catch(async () => {
     // If navigation didn't happen, check for error message
     const error = page.locator('p[role="alert"]');
     if (await error.isVisible()) {
@@ -43,7 +43,7 @@ async function login(page: Page, email: string, password = "Password123") {
   await page.fill('input[id="password"]', password);
   await page.click('button:has-text("Log in")');
 
-  await page.waitForURL(/\/complaints/, { timeout: 15_000 }).catch(() => {
+  await page.waitForURL(/\/complaints/, { timeout: 15_000 }).catch(async () => {
     const error = page.locator('p[role="alert"]');
     if (await error.isVisible()) {
       throw new Error(`Login failed: ${await error.textContent()}`);
@@ -56,7 +56,7 @@ async function login(page: Page, email: string, password = "Password123") {
 test("citizen can register and reach the complaint submission page", async ({
   page,
 }) => {
-  const email = `citizen-${Date.now()}@example.com`;
+  const email = `citizen${Date.now()}@example.com`;
   await registerCitizen(page, email);
 
   // After registration, the app navigates to /complaints/new
@@ -68,10 +68,12 @@ test("citizen can register and reach the complaint submission page", async ({
 test("registered citizen can log in and reach My Complaints", async ({
   page,
 }) => {
-  const email = `citizen-${Date.now()}@example.com`;
+  const email = `citizen${Date.now()}@example.com`;
   await registerCitizen(page, email);
 
-  // Log out then log back in
+  // Clear session so the login page is reachable (auth redirects /login away)
+  await page.evaluate(() => window.sessionStorage.clear());
+  await page.waitForLoadState("networkidle");
   await page.goto("/login");
   await login(page, email);
 
@@ -83,7 +85,7 @@ test("registered citizen can log in and reach My Complaints", async ({
 test("citizen is blocked from superintendent escalations page", async ({
   page,
 }) => {
-  const email = `citizen-${Date.now()}@example.com`;
+  const email = `citizen${Date.now()}@example.com`;
   await registerCitizen(page, email);
 
   await page.goto("/superintendent/escalations");
@@ -92,7 +94,7 @@ test("citizen is blocked from superintendent escalations page", async ({
 });
 
 test("citizen is blocked from admin users page", async ({ page }) => {
-  const email = `citizen-${Date.now()}@example.com`;
+  const email = `citizen${Date.now()}@example.com`;
   await registerCitizen(page, email);
 
   await page.goto("/admin/users");

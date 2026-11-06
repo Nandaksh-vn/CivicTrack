@@ -18,7 +18,7 @@ services:
       - civictrack_db:/var/lib/mysql
       - ./backend/docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     ports:
-      - "3306:3306"
+      - "${MYSQL_PORT:-3306}:3306"
     healthcheck:
       test:
         - CMD-SHELL
@@ -27,6 +27,57 @@ services:
       timeout: 5s
       retries: 10
       start_period: 30s
+    networks:
+      - civictrack_net
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ------------------------- Migration job (19.3) ----------------------------
+  # One-shot: runs `alembic upgrade head` after MySQL is healthy. API/worker
+  # gate on `service_completed_successfully` so a failing migration stops the
+  # stack immediately (DEP-007: failure visibility).
+  migrate:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: civictrack_migrate
+    restart: "no"
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
+      RUN_MIGRATIONS: "false"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["alembic", "upgrade", "head"]
+    networks:
+      - civictrack_net
+
+  # ------------------------------ Demo seed ---------------------------------
+  # One-shot, gated behind the `seed` profile: `docker compose --profile seed run --rm seed`.
+  # Seed itself is idempotent, so re-running it is safe.
+  seed:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: civictrack_seed
+    restart: "no"
+    profiles: ["seed"]
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
+      RUN_MIGRATIONS: "false"
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    command: ["python", "-m", "app.seed"]
     networks:
       - civictrack_net
 
@@ -41,6 +92,7 @@ services:
       - .env
     environment:
       DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
+      RUN_MIGRATIONS: "true"
     volumes:
       - uploads:/app/uploads
     ports:
@@ -48,6 +100,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     healthcheck:
       test:
         - CMD
@@ -60,8 +114,13 @@ services:
       start_period: 20s
     networks:
       - civictrack_net
-    command: >
-      sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 1"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    # Entrypoint runs migrations (RUN_MIGRATIONS=true) then execs the image CMD:
+    #   uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 1
 
   # ------------------------------- Worker -----------------------------------
   worker:
@@ -74,11 +133,14 @@ services:
       - .env
     environment:
       DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
+      RUN_MIGRATIONS: "false"
     volumes:
       - uploads:/app/uploads
     depends_on:
-      api:
+      db:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     healthcheck:
       test: ["CMD", "python", "-c", "import os; os.kill(1, 0)"]
       interval: 30s
@@ -86,6 +148,11 @@ services:
       retries: 3
     networks:
       - civictrack_net
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     command: ["python", "-m", "app.worker"]
 
   # ---------------------------- Web (nginx SPA) -----------------------------
@@ -98,6 +165,7 @@ services:
         VITE_ENABLE_AI: ${VITE_ENABLE_AI:-false}
         VITE_ENABLE_MAP: ${VITE_ENABLE_MAP:-false}
         VITE_ENABLE_FEEDBACK: ${VITE_ENABLE_FEEDBACK:-false}
+        VITE_ALLOW_DEMO_ESCALATION: ${VITE_ALLOW_DEMO_ESCALATION:-false}
     container_name: civictrack_web
     restart: unless-stopped
     ports:
@@ -106,13 +174,18 @@ services:
       api:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost/"]
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/"]
       interval: 15s
       timeout: 5s
       retries: 5
       start_period: 10s
     networks:
       - civictrack_net
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 volumes:
   civictrack_db:

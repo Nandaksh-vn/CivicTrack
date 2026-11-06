@@ -4,9 +4,11 @@ CivicTrack is a community problem reporting and resolution platform. Citizens
 submit issues, departments accept or reject them, officers record progress, and
 overdue complaints escalate automatically after seven calendar days.
 
-This repository contains the Phase 3 baseline: a clean monorepo, local Docker
-Compose environment, FastAPI health probes, a React application shell, linting,
-typechecking, tests, and CI. Domain features are added in later phases.
+This repository is a clean monorepo with a Docker Compose environment,
+FastAPI health probes, a React application shell, linting, typechecking,
+tests, CI, and — since Phase 19 — a one-command deployment, demo dataset,
+and operator runbook. See the [Runbook](docs/RUNBOOK.md) for production
+operations.
 
 ## Stack
 
@@ -16,7 +18,7 @@ typechecking, tests, and CI. Domain features are added in later phases.
 | Backend | Python 3.12, FastAPI, Pydantic v2, SQLAlchemy 2, Alembic |
 | Database | MySQL 8.4, InnoDB, `utf8mb4_0900_ai_ci`, UTC storage |
 | Worker | APScheduler (escalation service stub until Phase 11) |
-| Local runtime | Docker Compose: `db`, `api`, `worker`, `web` |
+| Local runtime | Docker Compose: `db`, `migrate`, `api`, `worker`, `web` (+ optional `proxy`) |
 | Quality | Ruff, mypy, pytest, ESLint, Vitest, Playwright, pre-commit |
 
 ## Prerequisites
@@ -77,6 +79,47 @@ typechecking, tests, and CI. Domain features are added in later phases.
 
    Use `docker compose down -v` only when you also want to delete the database
    and upload volumes.
+
+## Demo deployment (Phase 19)
+
+For a seeded, demo-ready stack with a short, visibly-labelled escalation
+window (AC-16):
+
+```bash
+cp .env.demo.example .env        # ENVIRONMENT=demo, ESCALATION_WINDOW_MINUTES=2
+docker compose up -d --build
+docker compose run --rm seed python -m app.seed
+docker compose run --rm seed python -m app.seed --check  # proves CT-2026-100009 is overdue
+```
+
+- Web: <http://localhost:8080> (amber “Demo mode” banner), API: <http://localhost:8000>
+- The stack is `db → migrate → api → worker → web`. The one-shot `migrate`
+  job runs `alembic upgrade head` first; `api`/`worker` wait for it, so a
+  failed migration stops startup immediately. `seed` is a one-shot
+  `seed`-profile service, safe to re-run.
+- Demo accounts (password `SEED_PASSWORD`, default `Demo@12345`):
+  `admin@demo.local`, `officer.{water,roads,electrical,sanitation}@demo.local`,
+  `superintendent@demo.local`, `citizen1@demo.local`, `citizen2@demo.local`.
+- The overdue demo complaint is **`CT-2026-100009`** (ACCEPTED, deadline past).
+
+Full operator instructions: **[docs/RUNBOOK.md](docs/RUNBOOK.md)** —
+start/stop/reset/seed/trigger escalation/rotate JWT secret/backup/restore.
+
+### Environment matrix (dev / demo / prod)
+
+| Variable | dev | demo | prod |
+|---|---|---|---|
+| `ENVIRONMENT` | `development` | `demo` | `production` |
+| `ESCALATION_WINDOW_MINUTES` | `10080` | `2` | `10080` |
+| `ALLOW_DEMO_ESCALATION` | `false` | `true` | `false` |
+| `VITE_ALLOW_DEMO_ESCALATION` (build) | `false` | `true` | `false` |
+
+Production example: `cp .env.production.example .env`, replace every
+`CHANGE_ME` secret, then
+`docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build`.
+The prod overlay unpublishes the DB, binds `api`/`web` to `127.0.0.1`, and can
+add the `proxy` (Caddy) profile for TLS. Back up with `scripts/backup.{sh,ps1}`
+and restore with `scripts/restore.{sh,ps1}` (30-day retention, append-only).
 
 ## Local development (without Docker)
 
@@ -216,6 +259,14 @@ The app also accepts these compatibility aliases:
 - Backend: Ruff, Ruff format check, mypy, pytest with coverage.
 - Frontend: ESLint, TypeScript, Vitest, production build.
 - Compose: `docker compose config` validation.
+
+## Deployment & operations
+
+See [docs/RUNBOOK.md](docs/RUNBOOK.md) for start/stop/reset/seed,
+escalation triggering, JWT rotation, backup/restore, health checks,
+log aggregation, and troubleshooting. Production uses
+`docker compose -f docker-compose.yml -f docker-compose.prod.yml`;
+backup scripts are `scripts/backup.*` / `scripts/restore.*`.
 
 ## Design documents
 

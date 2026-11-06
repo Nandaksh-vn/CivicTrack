@@ -1,0 +1,16 @@
+# CivicTrack reverse proxy — copy to deploy/Caddyfile and set your domain.
+#   cp deploy/Caddyfile.example deploy/Caddyfile
+# Start with: docker compose -f docker-compose.yml -f docker-compose.prod.yml --profile proxy up -d --build
+#
+# Caddy provisions TLS automatically (Let's Encrypt) when a public domain is used.
+# The SPA (web) is the only public entrypoint; /api + /health are proxied by nginx
+# inside the web container, so Caddy only needs to talk to `web`.
+
+{$DOMAIN:example.com} {
+	reverse_proxy web:80
+}
+
+# Local / test usage without a domain (HTTP only):
+# :8080 {
+#	reverse_proxy web:80
+# }

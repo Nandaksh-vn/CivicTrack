@@ -1,0 +1,53 @@
+# CivicTrack production overlay (19.2, DEP-006).
+#
+# Usage (production, from a clean clone):
+#   cp .env.production.example .env   # then fill secrets, set ENVIRONMENT=production
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+#
+# This file only *overrides* the base stack in docker-compose.yml:
+#   * db is NOT published to the host (no 3306)
+#   * api/web bind to localhost only (put Caddy in front for public TLS)
+#   * an optional reverse proxy (Caddy) is available behind the `proxy` profile
+# Volumes civictrack_db + uploads are persistent across restarts (NFR-011/022).
+#
+# Verify: `docker compose -f docker-compose.yml -f docker-compose.prod.yml config`
+
+services:
+  db:
+    ports: !override []
+    restart: always
+  api:
+    ports: !override ["127.0.0.1:8000:8000"]
+    restart: always
+  web:
+    ports: !override ["127.0.0.1:8080:80"]
+    restart: always
+  proxy:
+    image: caddy:2-alpine
+    container_name: civictrack_proxy
+    restart: always
+    profiles: ["proxy"]
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
+      - api
+    networks:
+      - civictrack_net
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  caddy_data:
+    driver: local
+  caddy_config:
+    driver: local

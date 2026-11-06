@@ -49,6 +49,7 @@ def test_cors_origins_are_split_and_trimmed() -> None:
 def test_compatibility_aliases_are_read_from_environment(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    monkeypatch.delenv("INTERNAL_TRIGGER_TOKEN", raising=False)
     monkeypatch.setenv("JWT_SECRET", "a" * 32)
     monkeypatch.setenv("INTERNAL_API_TOKEN", "b" * 32)
     monkeypatch.setenv("ESCALATION_INTERVAL_SECONDS", "15")

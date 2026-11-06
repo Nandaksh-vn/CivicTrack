@@ -2,8 +2,6 @@
  * Phase 17 — Accessibility E2E Tests (TEST-045)
  *
  * Runs axe-core scans on all main screens and a keyboard-only walkthrough.
- * Requires @axe-core/playwright and a running backend + frontend.
- *
  * Accessibility audit must have no critical/serious violations on main flows.
  */
 
@@ -28,15 +26,12 @@ test.describe("axe accessibility scans", () => {
         .withTags(["wcag2a", "wcag2aa", "section508"])
         .analyze();
 
-      const critical = results.violations.filter(
-        (v) => v.impact === "critical",
-      );
+      const critical = results.violations.filter((v) => v.impact === "critical");
       const serious = results.violations.filter((v) => v.impact === "serious");
 
       expect(critical).toEqual([]);
       expect(serious).toEqual([]);
 
-      // Log minor/moderate violations for triage
       if (results.violations.length > critical.length + serious.length) {
         console.log(
           `${name}: ${results.violations.length - critical.length - serious.length} minor/moderate violation(s) to triage`,
@@ -48,18 +43,21 @@ test.describe("axe accessibility scans", () => {
   test("no critical/serious violations on My Complaints (authenticated)", async ({
     page,
   }) => {
-    // Register + log in as citizen
-    const email = `a11y-citizen-${Date.now()}@example.com`;
+    // Register + log in as citizen (email without hyphen for client-side validation)
+    const email = `a11ycitizen${Date.now()}@example.com`;
     await page.goto("/register");
+    await page.waitForLoadState("networkidle");
+
     await page.fill('input[id="full_name"]', "A11y Citizen");
     await page.fill('input[id="email"]', email);
     await page.fill('input[id="password"]', "Password123");
     await page.click('button:has-text("Create account")');
-    await page.waitForURL(/\/complaints\/new/);
+
+    await page.waitForURL(/\/complaints\/new/, { timeout: 15_000 });
 
     // Navigate to My Complaints
-    await page.click('a:has-text("My Complaints"), [aria-label*="My Complaints" i], text="My Complaints"');
-    await page.waitForURL(/\/complaints/);
+    await page.click('a:has-text("My Complaints")');
+    await page.waitForURL(/\/complaints\/?$/);
     await page.waitForLoadState("networkidle");
 
     const results = await new AxeBuilder({ page })
@@ -92,7 +90,6 @@ test.describe("keyboard-only walkthrough", () => {
 
     // Enter/Space should activate focused elements
     await page.keyboard.press("Enter");
-    // No crash; focus management works
   });
 
   test("register form is keyboard-navigable", async ({ page }) => {
@@ -104,8 +101,8 @@ test.describe("keyboard-only walkthrough", () => {
     await page.keyboard.press("Tab");
     await page.keyboard.press("Tab");
 
-    // Fill email via keyboard
-    await page.keyboard.type("keyboard-citizen@example.com");
+    // Fill email via keyboard (no hyphen - client regex doesn't allow it in local part)
+    await page.keyboard.type("keyboardcitizen@example.com");
     await page.keyboard.press("Tab");
     await page.keyboard.type("Password123");
     await page.keyboard.press("Tab");
