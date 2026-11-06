@@ -78,7 +78,7 @@ Overall Progress = Total Completed Tasks / Total Tasks × 100
 
 | Phase | Name | Tasks | Done | Progress | Status |
 |---|---|---:|---:|---:|---|
-| 1 | Requirements Validation & Scope Baseline | 11 | 0 | 0.0% | Not Started |
+| 1 | Requirements Validation & Scope Baseline | 11 | 11 | 100.0% | Completed |
 | 2 | Architecture & Technical Design Baseline | 12 | 0 | 0.0% | Not Started |
 | 3 | Repository, Tooling & Local Environment | 20 | 0 | 0.0% | Not Started |
 | 4 | Database Schema & Migrations | 20 | 0 | 0.0% | Not Started |
@@ -99,11 +99,11 @@ Overall Progress = Total Completed Tasks / Total Tasks × 100
 | 19 | Deployment, Operations & Demo Readiness | 12 | 0 | 0.0% | Not Started |
 | 20 | Documentation, Traceability Audit & Final Delivery | 12 | 0 | 0.0% | Not Started |
 | 21 | Optional P1 Enhancements (Gated) | 19 | 0 | 0.0% | Not Started |
-| **TOTAL** | **All phases** | **297** | **0** | **0.0%** | **Not Started** |
+| **TOTAL** | **All phases** | **297** | **11** | **3.7%** | **In Progress** |
 
-**Current Development Phase:** Phase 1 — Requirements Validation & Scope Baseline  
-**Overall Progress:** 0.0% (0 of 297 tasks)  
-**Last completed task:** —  
+**Current Development Phase:** Phase 2 — Architecture & Technical Design Baseline  
+**Overall Progress:** 3.7% (11 of 297 tasks)  
+**Last completed task:** DOC-011 — Run a scripted ID diff between SRS and the inventory; require zero missing and zero duplicates.  
 **Blocked tasks:** None
 
 ---
@@ -132,21 +132,21 @@ When asked to develop any part of the project:
 
 ### Documentation Tasks
 
-- [ ] DOC-001 — Build the requirement inventory from SRS: 64 FRs (50 P0 / 7 P1 / 7 P2), 22 NFRs, 20 BRs, 8 NT triggers, 16 ACs.
-- [ ] DOC-002 — Cross-check every PRD feature against at least one FR; flag any PRD item without a requirement ID.
-- [ ] DOC-003 — Verify all 44 user stories and map each story to its FRs; record the story→FR matrix.
-- [ ] DOC-004 — Confirm canonical roles, statuses, legal transitions, SLA window, tracking-number format, and 20-per-page pagination across PRD/SRS/TRD.
-- [ ] DOC-005 — Confirm P2 exclusions FR-058…FR-064 are labeled future and excluded from P0 acceptance.
-- [ ] DOC-006 — Log every open question and resolve it as "accept as documented" or "blocked"; no silent assumptions remain.
-- [ ] DOC-007 — Verify all NFR targets are measurable (p95, 5 MiB, 8 h, 10,080 min, 360 px, 500 complaints/50 users).
-- [ ] DOC-008 — Verify each AC-01…AC-16 has concrete, reproducible test steps.
-- [ ] DOC-009 — Reconcile terminology (`complaint`, `ticket`, `Superintendent`, `Platform Admin`) across documents.
-- [ ] DOC-010 — Publish `docs/TRACEABILITY_BASELINE.md` with FR, NFR, BR, NT, AC, and story matrices.
-- [ ] DOC-011 — Run a scripted ID diff between SRS and the inventory; require zero missing and zero duplicates.
+- [x] DOC-001 — Build the requirement inventory from SRS: 64 FRs (50 P0 / 7 P1 / 7 P2), 22 NFRs, 20 BRs, 8 NT triggers, 16 ACs.
+- [x] DOC-002 — Cross-check every PRD feature against at least one FR; flag any PRD item without a requirement ID.
+- [x] DOC-003 — Verify all 44 user stories and map each story to its FRs; record the story→FR matrix.
+- [x] DOC-004 — Confirm canonical roles, statuses, legal transitions, SLA window, tracking-number format, and 20-per-page pagination across PRD/SRS/TRD.
+- [x] DOC-005 — Confirm P2 exclusions FR-058…FR-064 are labeled future and excluded from P0 acceptance.
+- [x] DOC-006 — Log every open question and resolve it as "accept as documented" or "blocked"; no silent assumptions remain.
+- [x] DOC-007 — Verify all NFR targets are measurable (p95, 5 MiB, 8 h, 10,080 min, 360 px, 500 complaints/50 users).
+- [x] DOC-008 — Verify each AC-01…AC-16 has concrete, reproducible test steps.
+- [x] DOC-009 — Reconcile terminology (`complaint`, `ticket`, `Superintendent`, `Platform Admin`) across documents.
+- [x] DOC-010 — Publish `docs/TRACEABILITY_BASELINE.md` with FR, NFR, BR, NT, AC, and story matrices.
+- [x] DOC-011 — Run a scripted ID diff between SRS and the inventory; require zero missing and zero duplicates.
 
-**Phase Notes:** —  
-**Phase Status:** Not Started  
-**Phase Completion:** 0.0% (0/11 tasks)
+**Phase Notes:** All 11 documentation tasks validated. Baseline `docs/TRACEABILITY_BASELINE.md` published (84 KB, 765 lines) with 215/215 SRS requirement IDs and 44/44 stories, zero missing, zero duplicates. Scripted validator `OVERALL: PASS`. 14 open questions resolved, 0 open P0, 0 blocked. No application code written.  
+**Phase Status:** Completed  
+**Phase Completion:** 100.0% (11/11 tasks)
 
 ---
 
@@ -963,7 +963,7 @@ At the end of every work session, append a row:
 
 | Date | Phase | Last completed task | Next task | Tests run | Notes |
 |---|---|---|---|---|---|
-| — | — | — | — | — | — |
+| 2026-11-06 | Phase 1 | DOC-011 | DOC-012 | `validate_baseline.py` → OVERALL: PASS (215/215 SRS IDs, 44/44 stories, 0 missing, 0 duplicates) | Phase 1 complete; baseline published at `docs/TRACEABILITY_BASELINE.md`; tracker relocated to project root. |
 
 **Resume procedure:** read the Progress Dashboard → read the current phase section → read the next unchecked task → read the matching phase in `docs/PHASES.md` → continue.
 
@@ -984,7 +984,7 @@ The tracker itself is valid only when all are true:
 - [x] Task counts in each phase footer match the actual checkbox count.
 - [x] Overall total in the dashboard matches the sum of phase totals.
 
-**Tracker validation status:** Passed — 21 phases, 297 unique tasks, 0 completed.
+**Tracker validation status:** Passed — 21 phases, 297 unique tasks, 11 completed.
 
 ---
 
