@@ -79,7 +79,7 @@ Overall Progress = Total Completed Tasks / Total Tasks × 100
 | Phase | Name | Tasks | Done | Progress | Status |
 |---|---|---:|---:|---:|---|
 | 1 | Requirements Validation & Scope Baseline | 11 | 11 | 100.0% | Completed |
-| 2 | Architecture & Technical Design Baseline | 12 | 0 | 0.0% | Not Started |
+| 2 | Architecture & Technical Design Baseline | 12 | 12 | 100.0% | Completed |
 | 3 | Repository, Tooling & Local Environment | 20 | 0 | 0.0% | Not Started |
 | 4 | Database Schema & Migrations | 20 | 0 | 0.0% | Not Started |
 | 5 | Backend Foundation & Cross-Cutting Core | 15 | 0 | 0.0% | Not Started |
@@ -99,10 +99,10 @@ Overall Progress = Total Completed Tasks / Total Tasks × 100
 | 19 | Deployment, Operations & Demo Readiness | 12 | 0 | 0.0% | Not Started |
 | 20 | Documentation, Traceability Audit & Final Delivery | 12 | 0 | 0.0% | Not Started |
 | 21 | Optional P1 Enhancements (Gated) | 19 | 0 | 0.0% | Not Started |
-| **TOTAL** | **All phases** | **297** | **66** | **22.2%** | **In Progress** |
+| **TOTAL** | **All phases** | **297** | **91** | **30.6%** | **In Progress** |
 
-**Current Development Phase:** Phase 2 — Architecture & Technical Design Baseline  
-**Overall Progress:** 22.2% (66 of 297 tasks)  
+**Current Development Phase:** Phase 3 — Repository, Tooling & Local Environment  
+**Overall Progress:** 30.6% (91 of 297 tasks)  
 **Last completed task:** TEST-035 — Form validation tests mirroring server constraints and 422 field mapping.  
 **Blocked tasks:** None
 
@@ -159,22 +159,31 @@ When asked to develop any part of the project:
 
 ### Documentation Tasks
 
-- [ ] DOC-012 — Draw the system context and container diagram (React SPA → FastAPI → MySQL + scheduler worker + uploads volume).
-- [ ] DOC-013 — Define backend module map and layering rule: `api` → `services` → `models`; no business logic in routers.
-- [ ] DOC-014 — Freeze the endpoint catalogue: method, path, role, request/response schema, error codes for every P0 endpoint.
-- [ ] DOC-015 — Freeze the status state machine and legal-transition table; document 409 behavior for illegal transitions.
-- [ ] DOC-016 — Specify the escalation algorithm: candidate query, advisory lock, conditional update, unique index, transaction boundary.
-- [ ] DOC-017 — Specify the auth model: JWT HS256, 8 h expiry, `sessionStorage`, role + object-scope policy, 401/403/404 rules.
-- [ ] DOC-018 — Define the frontend route tree, role guards, query keys, cache invalidation map, and notification polling.
-- [ ] DOC-019 — Produce sequence diagrams for submit, accept, escalate, resolve, and superintendent action.
-- [ ] DOC-020 — Define the error taxonomy and error envelope (`400/401/403/404/409/422/500`).
-- [ ] DOC-021 — Write ADR-001…ADR-008 covering escalation idempotency, notification atomicity, upload storage, UTC time, and demo guard.
-- [ ] DOC-022 — Review AC-01…AC-16 against the design; each AC must map to a module and endpoint.
-- [ ] DOC-023 — Publish `docs/ARCHITECTURE.md`, `docs/API_CONTRACT.md`, `docs/STATE_MACHINE.md`, and ADRs.
+- [x] DOC-012 — Draw the system context and container diagram (React SPA → FastAPI → MySQL + scheduler worker + uploads volume).
+- [x] DOC-013 — Define backend module map and layering rule: `api` → `services` → `models`; no business logic in routers.
+- [x] DOC-014 — Freeze the endpoint catalogue: method, path, role, request/response schema, error codes for every P0 endpoint.
+- [x] DOC-015 — Freeze the status state machine and legal-transition table; document 409 behavior for illegal transitions.
+- [x] DOC-016 — Specify the escalation algorithm: candidate query, advisory lock, conditional update, unique index, transaction boundary.
+- [x] DOC-017 — Specify the auth model: JWT HS256, 8 h expiry, `sessionStorage`, role + object-scope policy, 401/403/404 rules.
+- [x] DOC-018 — Define the frontend route tree, role guards, query keys, cache invalidation map, and notification polling.
+- [x] DOC-019 — Produce sequence diagrams for submit, accept, escalate, resolve, and superintendent action.
+- [x] DOC-020 — Define the error taxonomy and error envelope (`400/401/403/404/409/422/500`).
+- [x] DOC-021 — Write ADR-001…ADR-008 covering escalation idempotency, notification atomicity, upload storage, UTC time, and demo guard.
+- [x] DOC-022 — Review AC-01…AC-16 against the design; each AC must map to a module and endpoint.
+- [x] DOC-023 — Publish `docs/ARCHITECTURE.md`, `docs/API_CONTRACT.md`, `docs/STATE_MACHINE.md`, and ADRs.
 
-**Phase Notes:** —  
-**Phase Status:** Not Started  
-**Phase Completion:** 0.0% (0/12 tasks)
+**Phase Notes:** Phase 2 design baseline published and scripted-validated. ADRs 001–008 cover
+  escalation idempotency, notification atomicity, upload storage, UTC time, demo guard, JWT session,
+  transaction boundary, and frontend server state. ARCHITECTURE (context/containers, module map,
+  env contract, §10 module ownership), API_CONTRACT (40 P0 endpoints, 50/50 FR ownership,
+  16/16 AC traceability), STATE_MACHINE (11 legal transitions) published to docs/. The baseline was
+  recovered after the external branch reset (docs preserved via git object store and restored onto
+  this branch). Additions on restore: API_CONTRACT gained a 'P1 — not built' section, ARCHITECTURE
+  gained a gated-P1 section and the admin role home was aligned to `/admin/users` to match the live
+  SPA. Validator: ADRs 8/8, 40/40 P0 endpoints, 50/50 FR rows, 16/16 AC rows, 11 transitions,
+  8 mermaid diagrams, 0 blockers, P1-not-built PASS.  
+**Phase Status:** Completed  
+**Phase Completion:** 100.0% (12/12 tasks)
 
 ---
 
@@ -633,10 +642,9 @@ When asked to develop any part of the project:
 - [x] TEST-034 — Role navigation tests: each role sees only allowed links; citizen direct URL shows forbidden.
 - [x] TEST-035 — Form validation tests mirroring server constraints and 422 field mapping.
 
-**Phase Notes:** —  
-**Phase Status:** Not Started  
-**Phase Notes:** All P0 screens implemented under `frontend/src/pages/{auth,citizen,department,superintendent,admin}/` with typed API modules (`src/api/modules.ts`), Zod validators mirroring server rules (`src/lib/validators.ts`), role-guarded routes (`src/router/`), role-aware shell navigation with unread-count bell, demo-escalation labeling, and loading/empty/error/403/404 states on every screen. Validated: `tsc --noEmit` clean, `eslint --max-warnings=0` clean, `vitest run` 57/57 (incl. TEST-033..035 in `tests/unit/phase15.test.tsx` and `tests/unit/validators.test.ts`), `vite build` OK. Built concurrently with Phase 14; shared foundation (`api/client`, auth token, providers) reconciled - see Phase 14 notes.  
+**Phase Notes:** All P0 screens implemented under `frontend/src/pages/{auth,citizen,department,superintendent,admin}/` with typed API modules (`src/api/modules.ts`), Zod validators mirroring server rules (`src/lib/validators.ts`), role-guarded routes (`src/router/`), role-aware shell navigation with unread-count bell, demo-escalation labeling, and loading/empty/error/403/404 states on every screen. Validated: `tsc --noEmit` clean, `eslint --max-warnings=0` clean, `vitest run` 57/57 (incl. TEST-033..035 in `tests/unit/phase15.test.tsx` and `tests/unit/validators.test.ts`), `vite build` OK. Built concurrently with Phase 14; shared foundation (`api/client`, auth token, providers) reconciled — see Phase 14 notes.  
 **Phase Status:** Completed  
+**Phase Completion:** 100.0% (23/23 tasks)
 
 
 ---
@@ -985,6 +993,7 @@ At the end of every work session, append a row:
 |---|---|---|---|---|---|
 | 2026-11-06 | Phase 1 | DOC-011 | DOC-012 | `validate_baseline.py` → OVERALL: PASS (215/215 SRS IDs, 44/44 stories, 0 missing, 0 duplicates) | Phase 1 complete; baseline published at `docs/TRACEABILITY_BASELINE.md`; tracker relocated to project root. |
 | 2026-11-06 | Phase 14 | TEST-032 | Phase 2 (next open phase) | Frontend: `tsc --noEmit` clean, `eslint --max-warnings=0` clean, `vitest run` 57/57, `vite build` OK, axe audit zero violations, component tests cover guards + primitives. | Phase 14 completed: full route tree + role guards, sessionStorage auth with /auth/me bootstrap, normalized API client, shared QueryClient, role-aware shell, UI kit (DataTable/Pagination/StatusBadge/Empty/Error/Skeleton/Confirm/Toast/FormField), tokens with 4.5:1 contrast, 360px-safe layout, zero-violation axe. Collision with parallel scaffold was resolved by rebuilding the affected wired pages against this branch's backend. |
+| 2026-11-06 | Phase 2 | DOC-023 | Phase 3 (next open phase) | `validate_phase2.py` PASS: 8/8 ADRs, 40/40 P0 endpoints, 50/50 FR rows, 16/16 AC rows, 11 transitions, zero blockers, P1-not-built PASS. | Phase 2 completed: ARCHITECTURE.md, API_CONTRACT.md, STATE_MACHINE.md, ADRs 001–008 published. Source was recovered from the pre-reset object store and brought onto this branch; P1-not-built sections and the /admin/users role-home alignment were added to reconcile the frozen contract with the live SPA. Next: Phase 3 repo/tooling (mostly present) or Phase 4 database migrations (workstream active). |
 
 **Resume procedure:** read the Progress Dashboard → read the current phase section → read the next unchecked task → read the matching phase in `docs/PHASES.md` → continue.
 
@@ -1005,7 +1014,7 @@ The tracker itself is valid only when all are true:
 - [x] Task counts in each phase footer match the actual checkbox count.
 - [x] Overall total in the dashboard matches the sum of phase totals.
 
-**Tracker validation status:** Passed — 21 phases, 297 unique tasks, 43 completed.
+**Tracker validation status:** Passed — 21 phases, 297 unique tasks, 91 completed.
 
 ---
 
