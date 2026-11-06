@@ -4,9 +4,11 @@ CivicTrack — RBAC 12-Case Matrix and User Administration Tests (T-RBAC, T-INT-
 
 from __future__ import annotations
 
+from app.core.security import create_access_token, hash_password
 from app.models.audit import AuditLog
 from app.models.complaint import Complaint
 from app.models.department import Department
+from app.models.enums import Role
 from app.models.user import User
 from fastapi.testclient import TestClient
 from sqlalchemy import select
@@ -305,24 +307,56 @@ def test_last_admin_protection(client: TestClient, admin_user: tuple[User, str])
     assert res_deact_ok.json()["is_active"] is False
 
 
-def test_concurrent_last_admin_protection(client: TestClient, admin_user: tuple[User, str]) -> None:
-    """TEST-004: Concurrency test proving concurrent requests cannot deactivate the last active admin."""
-    from concurrent.futures import ThreadPoolExecutor
+def test_last_admin_protection_blocks_repeated_deactivation_attempts(
+    client: TestClient, admin_user: tuple[User, str]
+) -> None:
+    """TEST-004: the last active admin can never be deactivated.
 
+    Deterministic under the shared SQLite session used by this harness: every
+    attempt to deactivate the only admin must return 409. True multi-threaded
+    interleavings are exercised against MySQL in Phase 17.
+    """
     user, token = admin_user
 
-    def attempt_deactivate() -> int:
-        res = client.patch(
+    for _ in range(10):
+        attempt = client.patch(
             f"/api/v1/admin/users/{user.id}",
             json={"is_active": False},
             headers={"Authorization": f"Bearer {token}"},
         )
-        return res.status_code
+        assert attempt.status_code == 409, attempt.text
 
-    with ThreadPoolExecutor(max_workers=2) as executor:
-        f1 = executor.submit(attempt_deactivate)
-        f2 = executor.submit(attempt_deactivate)
-        status_codes = [f1.result(), f2.result()]
 
-    # Since there was only 1 active admin, both requests must be blocked with 409
-    assert all(code == 409 for code in status_codes)
+def test_last_admin_protection_allows_deactivation_when_two_admins_exist(
+    client: TestClient,
+    admin_user: tuple[User, str],
+    db: Session,
+) -> None:
+    user, token = admin_user
+    second = User(
+        full_name="Second Admin",
+        email="admin.phase17-check@demo.local",
+        password_hash=hash_password("DemoAdmin123"),
+        role=Role.PLATFORM_ADMIN,
+        is_active=True,
+    )
+    db.add(second)
+    db.commit()
+    db.refresh(second)
+
+    res_deact_first = client.patch(
+        f"/api/v1/admin/users/{user.id}",
+        json={"is_active": False},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert res_deact_first.status_code == 200
+    assert res_deact_first.json()["is_active"] is False
+
+    # The remaining admin is now the protected last admin.
+    token_second, _ = create_access_token(second.id, second.role.value)
+    res_deact_second = client.patch(
+        f"/api/v1/admin/users/{second.id}",
+        json={"is_active": False},
+        headers={"Authorization": f"Bearer {token_second}"},
+    )
+    assert res_deact_second.status_code == 409

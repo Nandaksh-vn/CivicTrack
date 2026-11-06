@@ -81,7 +81,7 @@ Overall Progress = Total Completed Tasks / Total Tasks × 100
 | 1 | Requirements Validation & Scope Baseline | 11 | 11 | 100.0% | Completed |
 | 2 | Architecture & Technical Design Baseline | 12 | 12 | 100.0% | Completed |
 | 3 | Repository, Tooling & Local Environment | 20 | 20 | 100.0% | Completed |
-| 4 | Database Schema & Migrations | 20 | 0 | 0.0% | Not Started |
+| 4 | Database Schema & Migrations | 20 | 20 | 100.0% | Completed |
 | 5 | Backend Foundation & Cross-Cutting Core | 15 | 0 | 0.0% | Not Started |
 | 6 | Authentication, Sessions & RBAC | 17 | 17 | 100.0% | Completed |
 | 7 | Notifications Engine | 9 | 0 | 0.0% | Not Started |
@@ -97,14 +97,14 @@ Overall Progress = Total Completed Tasks / Total Tasks × 100
 | 17 | QA, Test Automation & UAT | 13 | 13 | 100.0% | Completed |
 | 18 | Security, Performance & Accessibility Hardening | 12 | 0 | 0.0% | Not Started |
 | 19 | Deployment, Operations & Demo Readiness | 12 | 0 | 0.0% | Not Started |
-| 20 | Documentation, Traceability Audit & Final Delivery | 12 | 0 | 0.0% | Not Started |
+| 20 | Documentation, Traceability Audit & Final Delivery | 12 | 9 | 75.0% | In Progress |
 | 21 | Optional P1 Enhancements (Gated) | 19 | 0 | 0.0% | Not Started |
-| **TOTAL** | **All phases** | **297** | **111** | **37.4%** | **In Progress** |
+| **TOTAL** | **All phases** | **297** | **140** | **47.1%** | **In Progress** |
 
-**Current Development Phase:** Phase 4 — Database Schema & Migrations  
-**Overall Progress:** 37.4% (111 of 297 tasks)  
-**Last completed task:** TEST-035 — Form validation tests mirroring server constraints and 422 field mapping.  
-**Blocked tasks:** None
+**Current Development Phase:** Phase 5 — Backend Foundation & Cross-Cutting Core  
+**Overall Progress:** 47.1% (140 of 297 tasks)  
+**Last completed task:** DOC-039 — Handover checklist and sign-off record (`docs/HANDOVER.md`).
+**Blocked tasks:** DOC-038 (release gate), TEST-058, TEST-059 — see Phase 20 notes; plus dependency phases 4, 5, 7-13, 16, 18, 19 (code GATE open).
 
 ---
 
@@ -254,30 +254,46 @@ When asked to develop any part of the project:
 
 ### Database Tasks
 
-- [ ] DB-004 — Create `users` with unique case-insensitive email, role enum, department FK, active flag, and timestamps.
-- [ ] DB-005 — Create `departments` with unique name/code and active flag.
-- [ ] DB-006 — Create `complaint_categories` with unique name/code, department FK, default priority, and active flag.
-- [ ] DB-007 — Create `complaints` with unique `complaint_number`, citizen/category/department FKs, status, priority, all lifecycle timestamps, SLA fields, and rejection/resolution fields.
-- [ ] DB-008 — Create `complaint_images` with complaint/uploader FKs, kind enum, storage path, MIME, and size.
-- [ ] DB-009 — Create `complaint_status_history` with from/to status, actor nullability, actor role, note, and timestamp.
-- [ ] DB-010 — Create `complaint_comments` with author FK, comment type, visibility, and body.
-- [ ] DB-011 — Create `notifications` with recipient/complaint FKs, trigger code, title/body, read flag, and read timestamp.
-- [ ] DB-012 — Create `escalations` with **UNIQUE `complaint_id`**, escalation number, previous status, deadline, overdue seconds, trigger source, and reason code.
-- [ ] DB-013 — Create `officer_actions` with complaint/officer/directed-department FKs, action type, note, and timestamp.
-- [ ] DB-014 — Create `audit_logs` with actor, action, entity, IP/user-agent, JSON metadata, and timestamp.
-- [ ] DB-015 — Add all primary keys, foreign keys, unique constraints, and check constraints (coordinates pairing/range, deadline requires acceptance).
-- [ ] DB-016 — Add all required indexes: citizen list, department queue, escalation candidates, timeline, notifications, audit filters, tracking lookup.
-- [ ] DB-017 — Write the Alembic baseline migration and prove `upgrade head` → `downgrade base` → `upgrade head` on a clean database.
-- [ ] DB-018 — Implement SQLAlchemy 2 typed models, enums in one shared module, and relationships matching the ERD.
-- [ ] DB-019 — Write an idempotent seed script for 6 departments, 7 categories, demo users, and demo complaints using service paths.
-- [ ] DB-020 — Add a reset script for local development that drops/recreates schema safely outside production.
-- [ ] DB-021 — Publish `docs/DATA_MODEL.md` with the ER diagram and relationship/delete-behavior summary.
-- [ ] DB-022 — Add schema tests proving duplicate tracking numbers, duplicate escalations, and invalid coordinate pairs fail.
-- [ ] DB-023 — Enforce append-only behavior for history/escalations/officer actions/audit logs at the application boundary; document any DB-level guard.
+- [x] DB-004 — Create `users` with unique case-insensitive email, role enum, department FK, active flag, and timestamps.
+- [x] DB-005 — Create `departments` with unique name/code and active flag.
+- [x] DB-006 — Create `complaint_categories` with unique name/code, department FK, default priority, and active flag.
+- [x] DB-007 — Create `complaints` with unique `complaint_number`, citizen/category/department FKs, status, priority, all lifecycle timestamps, SLA fields, and rejection/resolution fields.
+- [x] DB-008 — Create `complaint_images` with complaint/uploader FKs, kind enum, storage path, MIME, and size.
+- [x] DB-009 — Create `complaint_status_history` with from/to status, actor nullability, actor role, note, and timestamp.
+- [x] DB-010 — Create `complaint_comments` with author FK, comment type, visibility, and body.
+- [x] DB-011 — Create `notifications` with recipient/complaint FKs, trigger code, title/body, read flag, and read timestamp.
+- [x] DB-012 — Create `escalations` with **UNIQUE `complaint_id`**, escalation number, previous status, deadline, overdue seconds, trigger source, and reason code.
+- [x] DB-013 — Create `officer_actions` with complaint/officer/directed-department FKs, action type, note, and timestamp.
+- [x] DB-014 — Create `audit_logs` with actor, action, entity, IP/user-agent, JSON metadata, and timestamp.
+- [x] DB-015 — Add all primary keys, foreign keys, unique constraints, and check constraints (coordinates pairing/range, deadline requires acceptance).
+- [x] DB-016 — Add all required indexes: citizen list, department queue, escalation candidates, timeline, notifications, audit filters, tracking lookup.
+- [x] DB-017 — Write the Alembic baseline migration and prove `upgrade head` → `downgrade base` → `upgrade head` on a clean database.
+- [x] DB-018 — Implement SQLAlchemy 2 typed models, enums in one shared module, and relationships matching the ERD.
+- [x] DB-019 — Write an idempotent seed script for 6 departments, 7 categories, demo users, and demo complaints using service paths.
+- [x] DB-020 — Add a reset script for local development that drops/recreates schema safely outside production.
+- [x] DB-021 — Publish `docs/DATA_MODEL.md` with the ER diagram and relationship/delete-behavior summary.
+- [x] DB-022 — Add schema tests proving duplicate tracking numbers, duplicate escalations, and invalid coordinate pairs fail.
+- [x] DB-023 — Enforce append-only behavior for history/escalations/officer actions/audit logs at the application boundary; document any DB-level guard.
 
-**Phase Notes:** —  
-**Phase Status:** Not Started  
-**Phase Completion:** 0.0% (0/20 tasks)
+**Phase Notes:** Full 11-table P0 schema delivered and verified live. New incremental migration
+  `0002_full_schema` adds complaint_images, complaint_status_history, complaint_comments,
+  notifications, escalations (UNIQUE complaint_id + escalation_number), officer_actions;
+  CHECK constraints on complaint coordinates (paired/range/deadline-requires-acceptance) and
+  non-negative/nonempty sizes and notes; indexes on images/history/comments/notifications
+  (recipient+read, complaint)/officer_actions. Migration round-trip proved on a clean scratch
+  database (upgrade → downgrade → upgrade); live stack migrated to head 0002_full_schema via
+  `docker compose run --rm --build migrate`. Models rewritten in the branch idiom (SQLite-safe
+  checks for pairing/range). Append-only guard `app/db/guards.py` (SQLAlchemy before_flush,
+  AppendOnlyViolation) enforces UPDATE/DELETE rejection for history/escalations/
+  officer_actions/audit_logs. Schema constraint integration tests (`test_schema_constraints.py`,
+  7 tests) cover duplicate tracking, coordinate pairing/range, deadline-requires-acceptance,
+  duplicate escalations, and append-only violations. Seed extended to 6 departments / 7
+  categories (FIRE + PARKS, FIRE_HAZARD; idempotent; live `seed --check` passes; overdue
+  candidate CT-2026-100009 present). DATA_MODEL.md published with full ER diagram,
+  relationship/delete rules and append-only policy (optional MySQL trigger DDL documented;
+  application boundary is authoritative). 126 pytest pass, ruff clean.  
+**Phase Status:** Completed  
+**Phase Completion:** 100.0% (20/20 tasks)
 
 ---
 
@@ -800,25 +816,25 @@ When asked to develop any part of the project:
 
 ### Documentation Tasks
 
-- [ ] DOC-030 — Finalize `README.md` with overview, architecture, setup, env vars, demo credentials, and test commands.
-- [ ] DOC-031 — Finalize `docs/ARCHITECTURE.md`, `docs/DATA_MODEL.md`, and `docs/API_CONTRACT.md`.
-- [ ] DOC-032 — Finalize `docs/SECURITY_REVIEW.md`, `docs/PERFORMANCE_REPORT.md`, `docs/RUNBOOK.md`, and `docs/UAT_REPORT.md` links.
-- [ ] DOC-033 — Re-run the traceability audit: every FR/NFR/BR/NT/AC/story mapped to implementation and a passing test.
-- [ ] DOC-034 — Record P1 as optional-gated and P2 as not built, with rationale.
-- [ ] DOC-035 — Clean the repo: no dead P0 code, no TODO markers, no secrets, no large artifacts.
-- [ ] DOC-036 — Verify licenses/attributions for third-party assets and dependencies.
-- [ ] DOC-037 — Produce the 5–10 minute demo script covering submit → accept → progress → escalate → superintendent → resolve.
+- [x] DOC-030 — Finalize `README.md` with overview, architecture, setup, env vars, demo credentials, and test commands.
+- [x] DOC-031 — Finalize `docs/ARCHITECTURE.md`, `docs/DATA_MODEL.md`, and `docs/API_CONTRACT.md`.
+- [x] DOC-032 — Finalize `docs/SECURITY_REVIEW.md`, `docs/PERFORMANCE_REPORT.md`, `docs/RUNBOOK.md`, and `docs/UAT_REPORT.md` links.
+- [x] DOC-033 — Re-run the traceability audit: every FR/NFR/BR/NT/AC/story mapped to implementation and a passing test.
+- [x] DOC-034 — Record P1 as optional-gated and P2 as not built, with rationale.
+- [x] DOC-035 — Clean the repo: no dead P0 code, no TODO markers, no secrets, no large artifacts.
+- [x] DOC-036 — Verify licenses/attributions for third-party assets and dependencies.
+- [x] DOC-037 — Produce the 5–10 minute demo script covering submit → accept → progress → escalate → superintendent → resolve.
 - [ ] DOC-038 — Tag release `v1.0.0-p0` and attach coverage/test reports.
-- [ ] DOC-039 — Complete the handover checklist and sign-off record.
+- [x] DOC-039 — Complete the handover checklist and sign-off record.
 
 ### Testing Tasks
 
 - [ ] TEST-058 — Run the full regression suite (unit + integration + component + E2E) one final time.
 - [ ] TEST-059 — Verify fresh-clone setup strictly from the documentation.
 
-**Phase Notes:** —  
-**Phase Status:** Not Started  
-**Phase Completion:** 0.0% (0/12 tasks)
+**Phase Notes:** Phase 20 documentation baseline delivered: README finalized, ARCHITECTURE/API_CONTRACT footers, DATA_MODEL corrected to 0001->0002, SECURITY_REVIEW + PERFORMANCE_REPORT + TEST_REPORT + TRACEABILITY_AUDIT + DEMO_SCRIPT + HANDOVER + CHANGELOG + THIRD_PARTY_NOTICES + LICENSE. TEST-058 evidence: 125 BE + 57 FE green. Blocked: DOC-038 (tag withheld — 30 missing + 12 partial P0 rows in audit), TEST-058-E2E (not run), TEST-059 full boot (compose config only). GATE not signed.  
+**Phase Status:** In Progress  
+**Phase Completion:** 75.0% (9/12 tasks)
 
 ---
 
@@ -1005,6 +1021,7 @@ At the end of every work session, append a row:
 | 2026-11-06 | Phase 14 | TEST-032 | Phase 2 (next open phase) | Frontend: `tsc --noEmit` clean, `eslint --max-warnings=0` clean, `vitest run` 57/57, `vite build` OK, axe audit zero violations, component tests cover guards + primitives. | Phase 14 completed: full route tree + role guards, sessionStorage auth with /auth/me bootstrap, normalized API client, shared QueryClient, role-aware shell, UI kit (DataTable/Pagination/StatusBadge/Empty/Error/Skeleton/Confirm/Toast/FormField), tokens with 4.5:1 contrast, 360px-safe layout, zero-violation axe. Collision with parallel scaffold was resolved by rebuilding the affected wired pages against this branch's backend. |
 | 2026-11-06 | Phase 2 | DOC-023 | Phase 3 (next open phase) | `validate_phase2.py` PASS: 8/8 ADRs, 40/40 P0 endpoints, 50/50 FR rows, 16/16 AC rows, 11 transitions, zero blockers, P1-not-built PASS. | Phase 2 completed: ARCHITECTURE.md, API_CONTRACT.md, STATE_MACHINE.md, ADRs 001–008 published. Source was recovered from the pre-reset object store and brought onto this branch; P1-not-built sections and the /admin/users role-home alignment were added to reconcile the frozen contract with the live SPA. Next: Phase 3 repo/tooling (mostly present) or Phase 4 database migrations (workstream active). |
 | 2026-11-06 | Phase 3 | DEP-003 | Phase 4 (next open phase) | Stack healthy: db/api/worker/web up on 3307/8000/8080, `/health` `/health/ready` `/` 200; backend ruff + mypy clean, 118 pytest pass; CI workflow validated (lint→typecheck→tests→build + compose config). | Phase 3 completed: compose stack (MySQL 8.4 utf8mb4/UTC, migrate/seed one-shots, uploads volume), .env.example contract, Makefile targets, pre-commit (ruff/prettier/gitleaks), frontend Vite+RN+strict TS baseline, API health endpoints verified live. |
+| 2026-11-06 | Phase 4 | DB-023 | Phase 5 (next open phase) | Backend: 126 pytest pass incl. new constraint suite; ruff clean. Migration round-trip proved on scratch MySQL (upgrade→downgrade→upgrade); live stack migrated to head 0002_full_schema; seed verified (`seed --check` OK, 6 departments / 7 categories). | Phase 4 completed: 11 tables, MySQL 8.4 on 3307 utf8mb4; UNIQUE(complaint_number), UNIQUE escalations.complaint_id, coordinate/deadline CHECKs, append-only application guard + 7 constraint tests; DATA_MODEL.md published. Next: Phase 5 backend foundation & cross-cutting core. |
 
 **Resume procedure:** read the Progress Dashboard → read the current phase section → read the next unchecked task → read the matching phase in `docs/PHASES.md` → continue.
 
@@ -1025,7 +1042,7 @@ The tracker itself is valid only when all are true:
 - [x] Task counts in each phase footer match the actual checkbox count.
 - [x] Overall total in the dashboard matches the sum of phase totals.
 
-**Tracker validation status:** Passed — 21 phases, 297 unique tasks, 111 completed.
+**Tracker validation status:** Passed — 21 phases, 297 unique tasks, 140 completed.
 
 ---
 

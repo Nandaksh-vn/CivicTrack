@@ -8,6 +8,7 @@ from datetime import datetime
 from decimal import Decimal
 
 from sqlalchemy import (
+    CheckConstraint,
     DateTime,
     Enum,
     ForeignKey,
@@ -91,4 +92,20 @@ class Complaint(Base):
         Index("ix_complaints_dept_status_sub", "department_id", "status", "submitted_at"),
         Index("ix_complaints_citizen_sub", "citizen_id", "submitted_at"),
         Index("ix_complaints_status_due", "status", "resolution_due_at"),
+        CheckConstraint(
+            "(latitude IS NULL) = (longitude IS NULL)",
+            name="ck_complaints_coordinates_paired",
+        ),
+        CheckConstraint(
+            "latitude BETWEEN -90 AND 90 OR latitude IS NULL",
+            name="ck_complaints_latitude_range",
+        ),
+        CheckConstraint(
+            "longitude BETWEEN -180 AND 180 OR longitude IS NULL",
+            name="ck_complaints_longitude_range",
+        ),
+        CheckConstraint(
+            "resolution_due_at IS NULL OR accepted_at IS NOT NULL",
+            name="ck_complaints_deadline_requires_acceptance",
+        ),
     )

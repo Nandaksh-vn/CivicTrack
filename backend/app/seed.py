@@ -55,6 +55,8 @@ _DEPARTMENTS: list[tuple[str, str, str]] = [
     ("Road Maintenance", "ROADS", "Potholes and road repairs"),
     ("Electrical Department", "ELEC", "Streetlights and wiring"),
     ("Sanitation", "SANI", "Garbage and public cleanliness"),
+    ("Fire & Rescue", "FIRE", "Fire hazards and rescue operations"),
+    ("Parks & Recreation", "PARKS", "Parks, recreation and public green spaces"),
 ]
 
 _CATEGORIES: list[tuple[str, str, str, Priority]] = [
@@ -64,6 +66,7 @@ _CATEGORIES: list[tuple[str, str, str, Priority]] = [
     ("Broken Streetlight", "STREETLIGHT", "ELEC", Priority.MEDIUM),
     ("Road Lighting Repair", "ROAD_LIGHTING", "ELEC", Priority.LOW),
     ("Garbage Collection", "GARBAGE", "SANI", Priority.MEDIUM),
+    ("Fire Hazard / Smoke", "FIRE_HAZARD", "FIRE", Priority.HIGH),
 ]
 
 _USERS: list[tuple[str, str, Role, str | None]] = [
