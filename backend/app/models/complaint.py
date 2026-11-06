@@ -86,6 +86,7 @@ class Complaint(Base):
     citizen = relationship("User", foreign_keys=[citizen_id])
     department = relationship("Department", foreign_keys=[department_id])
     category = relationship("ComplaintCategory", foreign_keys=[category_id])
+    resolved_by = relationship("User", foreign_keys=[resolved_by_user_id])
 
     __table_args__ = (
         Index("ix_complaints_dept_status_sub", "department_id", "status", "submitted_at"),

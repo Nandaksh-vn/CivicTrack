@@ -18,6 +18,10 @@ from app.models.enums import (
     Status,
     TriggerSource,
 )
+from app.models.escalation import Escalation
+from app.models.history import ComplaintStatusHistory
+from app.models.notification import Notification
+from app.models.officer_action import OfficerAction
 from app.models.user import User
 
 __all__ = [
@@ -34,4 +38,8 @@ __all__ = [
     "ComplaintCategory",
     "Complaint",
     "AuditLog",
+    "OfficerAction",
+    "Notification",
+    "ComplaintStatusHistory",
+    "Escalation",
 ]

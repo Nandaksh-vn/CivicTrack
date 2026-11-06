@@ -152,6 +152,7 @@ def test_rbac_case_11_officer_cannot_resolve_other_department_complaint(
     _, token = officer_electrical
     res = client.post(
         f"/api/v1/complaints/{complaint_roads.id}/resolve",
+        json={"note": "Resolution note of valid length."},
         headers={"Authorization": f"Bearer {token}"},
     )
     assert res.status_code == 403

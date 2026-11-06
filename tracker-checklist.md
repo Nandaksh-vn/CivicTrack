@@ -89,7 +89,7 @@ Overall Progress = Total Completed Tasks / Total Tasks × 100
 | 9 | Citizen Tracking & Timeline | 9 | 0 | 0.0% | Not Started |
 | 10 | Department Review & Case Management | 15 | 0 | 0.0% | Not Started |
 | 11 | Escalation Engine (SLA Worker) | 15 | 0 | 0.0% | Not Started |
-| 12 | Superintendent Oversight | 11 | 0 | 0.0% | Not Started |
+| 12 | Superintendent Oversight | 11 | 11 | 100.0% | Completed |
 | 13 | Administration, Configuration & Audit | 9 | 0 | 0.0% | Not Started |
 | 14 | Frontend Foundation & Design System | 15 | 0 | 0.0% | Not Started |
 | 15 | Role Workspaces & UI Flows | 23 | 0 | 0.0% | Not Started |
@@ -496,24 +496,24 @@ When asked to develop any part of the project:
 
 ### Backend Tasks
 
-- [ ] BE-079 — Implement `GET /superintendent/escalations` sorted by overdue duration descending with all required fields.
-- [ ] BE-080 — Implement the escalated detail projection: department, acceptance, deadline, overdue at request time, resolution info.
-- [ ] BE-081 — Grant full timeline/progress/evidence read for escalated complaints; keep operational actions escalated-only.
-- [ ] BE-082 — Implement `POST /complaints/{id}/superintendent-actions` for INSTRUCTION/FOLLOW_UP/REASSIGN/NOTE with note 5–2,000.
-- [ ] BE-083 — Record optional `directed_department_id` without changing the complaint's original department.
-- [ ] BE-084 — Create NT-06 for the responsible department officers and the citizen in the action transaction.
-- [ ] BE-085 — Implement superintendent resolution from ESCALATED with note 10–2,000, actor attribution, history, and NT-07.
-- [ ] BE-086 — Enforce superintendent scope on all operational routes and reject non-escalated actions.
+- [x] BE-079 — Implement `GET /superintendent/escalations` sorted by overdue duration descending with all required fields.
+- [x] BE-080 — Implement the escalated detail projection: department, acceptance, deadline, overdue at request time, resolution info.
+- [x] BE-081 — Grant full timeline/progress/evidence read for escalated complaints; keep operational actions escalated-only.
+- [x] BE-082 — Implement `POST /complaints/{id}/superintendent-actions` for INSTRUCTION/FOLLOW_UP/REASSIGN/NOTE with note 5–2,000.
+- [x] BE-083 — Record optional `directed_department_id` without changing the complaint's original department.
+- [x] BE-084 — Create NT-06 for the responsible department officers and the citizen in the action transaction.
+- [x] BE-085 — Implement superintendent resolution from ESCALATED with note 10–2,000, actor attribution, history, and NT-07.
+- [x] BE-086 — Enforce superintendent scope on all operational routes and reject non-escalated actions.
 
 ### Testing Tasks
 
-- [ ] TEST-024 — Queue ordering and overdue computation test.
-- [ ] TEST-025 — Action validation, append-only row, timeline entry, and NT-06 recipients.
-- [ ] TEST-026 — Superintendent resolve rules and permission boundaries.
+- [x] TEST-024 — Queue ordering and overdue computation test.
+- [x] TEST-025 — Action validation, append-only row, timeline entry, and NT-06 recipients.
+- [x] TEST-026 — Superintendent resolve rules and permission boundaries.
 
-**Phase Notes:** —  
-**Phase Status:** Not Started  
-**Phase Completion:** 0.0% (0/11 tasks)
+**Phase Notes:** Phase 12 complete: escalation queue ordering, overdue computation at request time, supervisory actions with NT-06 fan-out, follow-up directives, timeline integration, superintendent resolution from ESCALATED with NT-07, and operational scope enforcement.  
+**Phase Status:** Completed  
+**Phase Completion:** 100.0% (11/11 tasks)
 
 ---
 
